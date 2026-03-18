@@ -19,13 +19,14 @@ export default function WelcomeScreen({ navigation }) {
 
       <View className="flex-1 justify-center items-center px-6">
         
-        {/* Central Illustration Card */}
-        <View className="bg-teal-50 p-6 rounded-[40px] shadow-sm mb-10 w-64 h-64 justify-center items-center border border-teal-100 shadow-teal-200">
-             <Heart size={120} color="#0d9488" fill="#0d9488" opacity={0.2} strokeWidth={1} />
-             <View className="absolute">
-                 <Heart size={80} color="#0d9488" fill="#0d9488" strokeWidth={2.5} />
-             </View>
-        </View>
+         {/* Central Illustration Card */}
+         <View className="bg-white p-10 rounded-[40px] shadow-sm mb-10 w-64 h-64 justify-center items-center border border-slate-50 shadow-slate-200">
+              <Image 
+                 source={require('../assets/logomeditrack.png')} 
+                 style={{ width: '100%', height: '100%' }}
+                 resizeMode="contain"
+              />
+         </View>
 
         <Text className="text-4xl font-extrabold text-slate-900 text-center mb-4 tracking-tight">
           Bienvenido
