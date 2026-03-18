@@ -54,24 +54,20 @@ export default function RegisterScreen({ navigation }) {
       {/* Background Decor */}
       <View className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-brand-blue/5 rounded-full" />
 
-      {/* Header Section MEGA-IMPACT (Side-by-Side) */}
-      <View className="px-6 pt-1 flex-row items-center justify-start">
-         <View className="bg-white p-5 rounded-full shadow-2xl shadow-brand-blue/40 border-2 border-slate-50 mr-4">
+      {/* Header Section Compact (Single Row) */}
+      <View className="px-6 pt-2 pb-1 flex-row items-center justify-center">
+         <View className="bg-white p-3 rounded-full shadow-lg border-2 border-slate-50 mr-4">
             <Image 
                 source={require('../assets/logomeditrack.png')} 
-                style={{ width: 130, height: 130 }}
+                style={{ width: 60, height: 60 }}
                 resizeMode="contain"
             />
          </View>
-         <View className="flex-1">
-            <Text className="text-3xl font-black text-brand-dark leading-none">Crea tu</Text>
-            <Text className="text-4xl font-black text-brand-blue leading-tight mb-2">Cuenta</Text>
-            <View className="h-1 w-12 bg-brand-green rounded-full" />
-         </View>
+         <Text className="text-3xl font-black text-brand-dark">Crea tu Cuenta</Text>
       </View>
 
       {/* Form Card Ultra-Compact */}
-      <View className="flex-1 bg-white rounded-t-[35px] px-6 py-2 shadow-2xl shadow-slate-200 mt-2">
+      <View className="flex-1 bg-white rounded-t-[35px] px-6 py-4 shadow-2xl shadow-slate-200 mt-2">
         <KeyboardAvoidingView 
             behavior={Platform.OS === "ios" ? "padding" : undefined} 
             style={{ flex: 1 }}
