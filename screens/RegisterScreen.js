@@ -59,23 +59,23 @@ export default function RegisterScreen({ navigation }) {
       <View className="absolute bottom-[-50] left-[10%] w-[350] h-[350] bg-brand-blue/10 rounded-full" />
 
       {/* Visible Faded Large Medical Icons */}
-      <View className="absolute top-[15%] left-[10%] opacity-[0.12] rotate-12">
-          <Heart size={110} color="#1f95d5" strokeWidth={1.5} />
+      <View className="absolute top-[12%] left-[8%] opacity-[0.1] rotate-12">
+          <Heart size={100} color="#1f95d5" strokeWidth={1.5} />
       </View>
-      <View className="absolute bottom-[30%] right-[10%] opacity-[0.1] -rotate-12">
-          <Stethoscope size={130} color="#10b981" strokeWidth={1.5} />
+      <View className="absolute bottom-[28%] right-[8%] opacity-[0.08] -rotate-12">
+          <Stethoscope size={110} color="#10b981" strokeWidth={1.5} />
       </View>
-      <View className="absolute top-[55%] right-[20%] opacity-[0.08] rotate-45">
-          <Activity size={90} color="#1f95d5" strokeWidth={1.5} />
+      <View className="absolute top-[50%] right-[15%] opacity-[0.06] rotate-45">
+          <Activity size={80} color="#1f95d5" strokeWidth={1.5} />
       </View>
 
       <View className="flex-1 justify-center px-10">
-          {/* Central Logo Experience */}
-          <View className="items-center mb-12">
-            <View className="bg-white p-6 rounded-[35px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-6">
+          {/* Central Logo Experience - Adjusted Size */}
+          <View className="items-center mb-10">
+            <View className="bg-white p-5 rounded-[30px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-5">
                 <Image 
                     source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 110, height: 110 }}
+                    style={{ width: 90, height: 90 }}
                     resizeMode="contain"
                 />
             </View>

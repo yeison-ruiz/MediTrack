@@ -26,21 +26,24 @@ export default function LoginScreen({ navigation }) {
       <View className="absolute bottom-[10%] left-[10%] w-[200] h-[200] bg-brand-green/15 rounded-full" />
       <View className="absolute bottom-[-100] right-[-30] w-[450] h-[450] bg-brand-blue/12 rounded-full" />
 
-      {/* Floating Background Medical Icons - Visible */}
-      <View className="absolute top-[25%] right-[12%] opacity-[0.14] rotate-12">
-          <Activity size={130} color="#1f95d5" strokeWidth={1.5} />
+      {/* Floating Background Medical Icons - Refined */}
+      <View className="absolute top-[18%] right-[10%] opacity-[0.12] rotate-12">
+          <Activity size={100} color="#1f95d5" strokeWidth={1.5} />
       </View>
-      <View className="absolute bottom-[30%] left-[10%] opacity-[0.11] -rotate-45">
-          <Heart size={110} color="#10b981" strokeWidth={1.5} />
+      <View className="absolute bottom-[25%] left-[8%] opacity-[0.1] -rotate-45">
+          <Heart size={120} color="#10b981" strokeWidth={1.5} />
+      </View>
+      <View className="absolute top-[45%] left-[5%] opacity-[0.06] rotate-90">
+          <Activity size={70} color="#1f95d5" strokeWidth={1} />
       </View>
 
       <View className="flex-1 justify-center px-10">
-          {/* Central Animated Hero */}
-          <View className="items-center mb-12">
-            <View className="bg-white p-6 rounded-[35px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-6">
+          {/* Central Animated Hero - Refined Logo Size */}
+          <View className="items-center mb-10">
+            <View className="bg-white p-5 rounded-[30px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-5">
                 <Image 
                     source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 110, height: 110 }}
+                    style={{ width: 90, height: 90 }}
                     resizeMode="contain"
                 />
             </View>
