@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, FlatList, Dimensions, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity, Cloud, CloudOff, Wifi } from 'lucide-react-native';
+import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity, Cloud, CloudOff, Wifi, Plus, Heart } from 'lucide-react-native';
 
 import * as Speech from 'expo-speech';
 import { useAuthStore } from '../store/useAuthStore';
