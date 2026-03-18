@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Dimensions, Alert, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, MoreVertical, Pill, Calendar, Clock, Edit2, PauseCircle, Utensils, AlertTriangle, Box } from 'lucide-react-native';
+import { ChevronLeft, MoreVertical, Pill, Calendar, Clock, Edit2, PauseCircle, Utensils, AlertTriangle, Box, Activity } from 'lucide-react-native';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useAlert } from '../components/AlertSystem';
@@ -95,26 +96,37 @@ export default function MedicationDetailsScreen({ navigation, route }) {
 
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
                 
-                {/* 1. HERO CARD */}
-                <View className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 mb-6 mt-4 items-center overflow-hidden">
-                    <View className="w-full h-40 bg-blue-50 dark:bg-blue-900/40 rounded-2xl mb-4 items-center justify-center relative overflow-hidden">
-                        {/* Abstract Decorative Circles */}
-                        <View className="absolute top-0 left-0 w-20 h-20 bg-blue-100 dark:bg-blue-800/50 rounded-full -translate-x-10 -translate-y-10" />
-                        <View className="absolute bottom-0 right-0 w-32 h-32 bg-indigo-100 dark:bg-indigo-800/50 rounded-full translate-x-10 translate-y-10 opacity-50" />
+                {/* 1. HERO CARD PREMIUM */}
+                <View className="mb-8 mt-6 shadow-2xl shadow-blue-200 dark:shadow-none">
+                    <LinearGradient
+                        colors={
+                            med.type === 'Syrup' || med.type === 'Jarabe' ? ['#fff7ed', '#ffedd5'] :
+                            med.type === 'Injection' || med.type === 'Inyección' ? ['#f0fdf4', '#dcfce7'] :
+                            ['#eff6ff', '#dbeafe']
+                        }
+                        className="rounded-[40px] p-8 items-center overflow-hidden border border-white/50"
+                    >
+                        {/* Decorative background glass elements */}
+                        <View className="absolute -top-10 -right-10 w-40 h-40 bg-white/30 rounded-full" />
+                        <View className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/20 rounded-full" />
                         
-                        {/* Dynamic Icon based on Type */}
-                        {(med.type === 'Syrup' || med.type === 'Jarabe') ? (
-                            <Utensils size={80} color="#3b82f6" /> 
-                        ) : (med.type === 'Injection' || med.type === 'Inyección') ? (
-                            <Box size={80} color="#3b82f6" /> 
-                        ) : (
-                            <Pill size={80} color="#3b82f6" />
-                        )}
-                    </View>
-                    <Text className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{med.name}</Text>
-                    <Text className="text-xs font-bold text-slate-400 tracking-widest uppercase">
-                        TRATAMIENTO • {translateType(med.type)}
-                    </Text>
+                        <View className="bg-white/90 dark:bg-slate-800/90 p-7 rounded-[32px] shadow-xl shadow-blue-200/50 mb-6">
+                            {(med.type === 'Syrup' || med.type === 'Jarabe') ? (
+                                <Utensils size={80} color="#ea580c" /> 
+                            ) : (med.type === 'Injection' || med.type === 'Inyección') ? (
+                                <Activity size={80} color="#16a34a" /> 
+                            ) : (
+                                <Pill size={80} color="#2563eb" />
+                            )}
+                        </View>
+
+                        <Text className="text-3xl font-black text-slate-900 dark:text-white mb-2 text-center tracking-tight">{med.name}</Text>
+                        <View className="bg-white/70 px-5 py-2 rounded-full border border-white/90 backdrop-blur-md">
+                            <Text className="text-[10px] font-bold text-slate-600 tracking-[4px] uppercase">
+                                {translateType(med.type)}
+                            </Text>
+                        </View>
+                    </LinearGradient>
                 </View>
 
                 {/* 2. DOSAGE SECTION */}
