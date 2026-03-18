@@ -51,9 +51,23 @@ export default function RegisterScreen({ navigation }) {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="dark" />
       
-      {/* Dynamic Background Elements */}
-      <View className="absolute top-[-50] right-[-50] w-[300] h-[300] bg-brand-blue/5 rounded-full" />
-      <View className="absolute bottom-[-100] left-[-50] w-[400] h-[400] bg-brand-green/5 rounded-full" />
+      {/* Modern Bubble & Icon Background Layer */}
+      <View className="absolute top-[-20] left-[-30] w-[200] h-[200] bg-brand-blue/5 rounded-full" />
+      <View className="absolute top-[10%] right-[-40] w-[150] h-[150] bg-brand-green/3 rounded-full" />
+      <View className="absolute top-[40%] left-[-80] w-[250] h-[250] bg-brand-blue/3 rounded-full" />
+      <View className="absolute bottom-[20%] right-[-60] w-[180] h-[180] bg-brand-green/5 rounded-full" />
+      <View className="absolute bottom-[-50] left-[10%] w-[300] h-[300] bg-brand-blue/5 rounded-full" />
+
+      {/* Faded Large Icons for Medical Texture */}
+      <View className="absolute top-[15%] left-[10%] opacity-[0.04] rotate-12">
+          <Plus size={100} color="#1f95d5" strokeWidth={1} />
+      </View>
+      <View className="absolute bottom-[25%] right-[5%] opacity-[0.03] -rotate-12">
+          <UserPlus size={120} color="#10b981" strokeWidth={1} />
+      </View>
+      <View className="absolute top-[60%] right-[15%] opacity-[0.02] rotate-45">
+          <Mail size={80} color="#1f95d5" strokeWidth={1} />
+      </View>
 
       <View className="flex-1 justify-center px-10">
           {/* Central Logo Experience */}
