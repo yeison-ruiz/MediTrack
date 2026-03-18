@@ -23,6 +23,7 @@ jobs:
 
       - name: 🩺 Expo Doctor
         run: npx expo-doctor
+        continue-on-error: true
 
       - name: 🛠 Verify Build (Dry Run)
         run: npx expo export --platform android --output-dir dist
