@@ -110,13 +110,38 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         <View className="absolute -top-10 -right-10 w-40 h-40 bg-white/30 rounded-full" />
                         <View className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/20 rounded-full" />
                         
-                        <View className="bg-white/90 dark:bg-slate-800/90 p-7 rounded-[32px] shadow-xl shadow-blue-200/50 mb-6">
+                        <View className="mb-6 h-32 w-32 items-center justify-center">
+                            {/* Renderizado de "Icono" Premium */}
                             {(med.type === 'Syrup' || med.type === 'Jarabe') ? (
-                                <Utensils size={80} color="#ea580c" /> 
+                                <View className="relative items-center">
+                                    <View className="w-16 h-28 bg-white/60 rounded-xl border-2 border-orange-200 overflow-hidden">
+                                        <View className="absolute bottom-0 w-full h-3/5 bg-orange-400" />
+                                        <View className="absolute top-2 left-2 w-2 h-10 bg-white/40 rounded-full" />
+                                    </View>
+                                    <View className="w-10 h-3 bg-orange-600 rounded-t-lg -mt-0.5" />
+                                    <View className="absolute top-1/2">
+                                        <Utensils size={32} color="white" opacity={0.8} />
+                                    </View>
+                                </View>
                             ) : (med.type === 'Injection' || med.type === 'Inyección') ? (
-                                <Activity size={80} color="#16a34a" /> 
+                                <View className="relative items-center rotate-45">
+                                    <View className="w-4 h-28 bg-white/60 border border-green-200 rounded-full relative overflow-hidden">
+                                        <View className="absolute bottom-4 w-full h-1/2 bg-green-500" />
+                                    </View>
+                                    <View className="w-1 h-10 bg-slate-400 -mb-2" />
+                                    <View className="w-10 h-2 bg-slate-500 rounded-full" />
+                                    <Activity className="absolute -right-8 top-1/2" size={24} color="#16a34a" />
+                                </View>
                             ) : (
-                                <Pill size={80} color="#2563eb" />
+                                <View className="relative items-center rotate-[30deg]">
+                                    <View className="w-14 h-28 bg-white/60 rounded-full border-2 border-blue-100 overflow-hidden shadow-2xl">
+                                        <View className="h-1/2 bg-blue-600 w-full" />
+                                        <View className="absolute top-4 left-4 w-3 h-8 bg-white/30 rounded-full" />
+                                    </View>
+                                    <View className="absolute -right-6 -bottom-2 opacity-40">
+                                         <Pill size={40} color="#2563eb" />
+                                    </View>
+                                </View>
                             )}
                         </View>
 
