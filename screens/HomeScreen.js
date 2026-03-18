@@ -348,11 +348,9 @@ export default function HomeScreen({ navigation, onNavigateToHistory }) {
                     
                     <View className="mb-4">
                         <View className="flex-row items-center mb-1">
-                             <Image 
-                                source={require('../assets/logomeditrack.png')} 
-                                style={{ width: 80, height: 16, marginRight: 6 }}
-                                resizeMode="contain"
-                             />
+                             <View className="bg-white/20 p-2 rounded-lg mr-2">
+                                <Heart size={20} color="white" fill="white" />
+                             </View>
                              <Text className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">¡BIENVENIDO!</Text>
                         </View>
                         <Text className="text-white font-bold text-2xl leading-8">Tu salud, organizada.</Text>

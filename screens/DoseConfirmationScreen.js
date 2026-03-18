@@ -49,12 +49,8 @@ export default function DoseConfirmationScreen({ navigation, route }) {
           
           {/* Header */}
           <View className="flex-row justify-center items-center py-4 border-b border-slate-100 bg-slate-50/50">
-              <Image 
-                  source={require('../assets/logomeditrack.png')} 
-                  style={{ width: 16, height: 16, marginRight: 8 }}
-                  resizeMode="contain"
-              />
-              <Text className="text-slate-500 font-bold uppercase tracking-widest text-xs">Confirmación de Dosis</Text>
+              <Bell size={16} color="#64748b" style={{ marginRight: 8 }} />
+              <Text className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Recordatorio de Dosis</Text>
           </View>
 
           {/* Body */}
