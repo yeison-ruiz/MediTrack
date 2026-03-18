@@ -371,13 +371,30 @@ export default function HomeScreen({ navigation, onNavigateToHistory }) {
                     </TouchableOpacity>
                  </View>
             ) : nextDose ? (
-                <View className={`${nextDose.status === 'missed' ? 'bg-red-500 shadow-red-200' : 'bg-blue-600 shadow-blue-200'} w-full rounded-3xl p-6 shadow-xl dark:shadow-none mb-6 relative overflow-hidden`}>
-                    <View className="absolute -right-10 -top-10 bg-white opacity-10 w-40 h-40 rounded-full" />
-                    <View className="absolute -left-10 -bottom-10 bg-white opacity-10 w-32 h-32 rounded-full" />
+                           <View className={`${nextDose.status === 'missed' ? 'bg-red-500 shadow-red-200' : 'bg-brand-dark shadow-brand-dark/30'} w-full rounded-3xl p-6 shadow-xl dark:shadow-none mb-6 relative overflow-hidden`}>
+                    <View className="absolute -right-10 -top-10 bg-white/5 w-40 h-40 rounded-full" />
+                    <View className="absolute -left-10 -bottom-10 bg-white/5 w-32 h-32 rounded-full" />
     
-                    <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-100'} text-xs font-bold uppercase tracking-widest mb-4 flex-row items-center`}>
-                        {nextDose.status === 'missed' ? '⚠️  REPORTAR TOMA: ' : '⏱  PRÓXIMA DOSIS: '} {nextDose.name.toUpperCase()}
+                    <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-slate-300'} text-xs font-bold uppercase tracking-widest mb-4 flex-row items-center`}>
+                        {nextDose.status === 'missed' ? '⚠️ DOSIS OMITIDA' : '🔔 SIGUIENTE DOSIS'}
                     </Text>
+                    
+                    <View className="flex-row items-center justify-between mb-4">
+                        <View className="flex-1">
+                            <Text className="text-white text-3xl font-black tracking-tight" numberOfLines={1}>
+                                {nextDose.name}
+                            </Text>
+                            <View className="flex-row items-center mt-1">
+                                <Text className="text-brand-yellow font-bold text-xs uppercase tracking-widest">Dosis: </Text>
+                                <Text className="text-white text-xs font-medium opacity-90">{nextDose.dosage}</Text>
+                            </View>
+                        </View>
+                        <View className="bg-white/10 p-4 rounded-2xl border border-white/10">
+                            <Text className="text-white text-3xl font-black">{formatToAmPm(nextDose.scheduledTime).split(' ')[0]}</Text>
+                            <Text className="text-white text-[10px] font-bold text-center opacity-80">{formatToAmPm(nextDose.scheduledTime).split(' ')[1]}</Text>
+                        </View>
+                    </View>
+
     
                     <View className="flex-row justify-between mb-6">
                         {['HORAS', 'MIN', 'SEG'].map((label, idx) => {
@@ -398,36 +415,30 @@ export default function HomeScreen({ navigation, onNavigateToHistory }) {
     
                     <View className="flex-row justify-between items-end mt-auto">
                         <View className="flex-1 mr-2">
-                            <Text className="text-white font-black text-3xl tracking-tighter mb-1">{formatToAmPm(nextDose.scheduledTime)}</Text>
-                            <View className={`${nextDose.status === 'missed' ? 'bg-red-400/50' : 'bg-blue-500/50'} self-start px-2 py-0.5 rounded-md mb-2`}>
-                                <Text className="text-white text-[10px] font-black uppercase tracking-widest">DOSIS: {nextDose.dosage}</Text>
-                            </View>
-                            <Text numberOfLines={2} className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-200'} text-xs leading-4`}>
-                                {nextDose.notes || "Según receta"}
-                            </Text>
+                             <Text className="text-white font-black text-3xl tracking-tighter mb-1">{formatToAmPm(nextDose.scheduledTime)}</Text>
+                             <View className={`${nextDose.status === 'missed' ? 'bg-red-400/50' : 'bg-white/20'} self-start px-2 py-0.5 rounded-md mb-2`}>
+                                 <Text className="text-white text-[10px] font-black uppercase tracking-widest">DOSIS: {nextDose.dosage}</Text>
+                             </View>
+                             <Text numberOfLines={2} className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-slate-300'} text-xs leading-4`}>
+                                 {nextDose.notes || "Según receta médica"}
+                             </Text>
                         </View>
                         
-                        {/* Lógica de Botón Inteligente: Aparece si es Olvidada O si faltan menos de 30 mins */}
                         {(nextDose.status === 'missed' || (timeLeft.h === 0 && timeLeft.m <= 30) || nextDose.isTomorrow) ? (
                             <TouchableOpacity 
-                                className="bg-white px-5 py-3 rounded-xl shadow-lg border-2 border-white/50"
-                                onPress={() => {
-                                    console.log("Botón Registrar Toma presionado");
-                                    handleOpenConfirm(nextDose);
-                                }}
-                                activeOpacity={0.8}
-                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                className="bg-white px-6 py-4 rounded-xl shadow-lg active:scale-95 transition-all"
+                                onPress={() => handleOpenConfirm(nextDose)}
                             >
-                                <Text className={`${nextDose.status === 'missed' ? 'text-red-600' : 'text-blue-600'} font-bold uppercase text-xs`}>
+                                <Text className={`${nextDose.status === 'missed' ? 'text-red-600' : 'text-brand-dark'} font-black uppercase text-xs tracking-tight`}>
                                     {nextDose.status === 'missed' ? 'Tomar Ahora' : 'Confirmar'}
                                 </Text>
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity 
-                                className={`${nextDose.status === 'missed' ? 'bg-red-400/30 border-red-300/30' : 'bg-blue-500/30 border-blue-400/30'} border px-5 py-3 rounded-xl`}
+                                className="bg-white/10 border border-white/20 px-6 py-4 rounded-xl active:bg-white/20"
                                 onPress={() => navigation.navigate('MedicationDetails', { medication: nextDose })}
                             >
-                                <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-100'} font-bold uppercase text-xs`}>Ver Detalles</Text>
+                                <Text className="text-white font-bold uppercase text-xs tracking-tight">Detalles</Text>
                             </TouchableOpacity>
                         )}
                     </View>

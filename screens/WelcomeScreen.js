@@ -36,22 +36,22 @@ export default function WelcomeScreen({ navigation }) {
           Tu compañero de bienestar diario para el control de tu medicación.
         </Text>
 
-        {/* Buttons */}
-        <View className="w-full space-y-3 mt-8">
-            <TouchableOpacity 
-            className="w-full bg-slate-900 py-4 rounded-xl flex-row justify-center items-center shadow-lg shadow-slate-300 active:scale-95 duration-200"
+        {/* Buttons Section */}
+        <View className="w-full px-4 mb-2">
+          <TouchableOpacity 
+            className="bg-brand-blue py-5 rounded-2xl flex-row justify-center items-center shadow-xl shadow-brand-blue/30 active:scale-95 duration-150"
             onPress={() => navigation.navigate('Register')}
-            >
-            <Text className="text-white font-bold text-lg mr-2">Empezar</Text>
-            <ArrowRight color="white" size={20} />
-            </TouchableOpacity>
+          >
+            <Text className="text-white font-extrabold text-xl mr-2">Empezar</Text>
+            <ArrowRight color="white" size={24} strokeWidth={3} />
+          </TouchableOpacity>
+        </View>
 
-            <TouchableOpacity 
-            className="w-full bg-white py-4 rounded-xl flex-row justify-center items-center border border-slate-200 active:scale-95 duration-200"
-            onPress={() => navigation.navigate('Login')}
-            >
-            <Text className="text-slate-900 font-bold text-lg">Entrar</Text>
-            </TouchableOpacity>
+        <View className="flex-row justify-center mt-4">
+          <Text className="text-slate-400 font-medium text-base">¿Ya tienes cuenta? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text className="text-brand-blue font-bold text-base">Iniciar Sesión</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Pagination Dots */}

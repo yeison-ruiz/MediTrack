@@ -49,52 +49,52 @@ export default function MainTabScreen({ navigation }) {
 
             {/* BARRA DE NAVEGACIÓN FLOTANTE (Fija y Persistente) */}
             
-            {/* TAB BAR BLUE & WHITE - ESTILO MÉDICO PREMIUM */}
-            <View className="absolute bottom-6 left-2 right-2 h-20 bg-blue-600 rounded-[40px] shadow-2xl shadow-blue-400 dark:shadow-none flex-row items-center px-2 z-40 border border-blue-500">
-                
-                {/* INICIO */}
-                <TouchableOpacity className="items-center w-[18%] py-1" onPress={() => setActiveTab('Home')}>
-                    <Home size={22} color={activeTab === 'Home' ? '#ffffff' : '#bfdbfe'} strokeWidth={activeTab === 'Home' ? 2.5 : 1.8} />
-                    <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'Home' ? 'text-white' : 'text-blue-200'}`}>Inicio</Text>
-                </TouchableOpacity>
-                
-                {/* MEDICINAS */}
-                <TouchableOpacity className="items-center flex-1 py-1 pr-4" onPress={() => setActiveTab('Meds')}>
-                    <View className="items-center flex-row justify-end w-full">
-                        <View className="items-center">
-                            <Pill size={22} color={activeTab === 'Meds' ? '#ffffff' : '#bfdbfe'} strokeWidth={activeTab === 'Meds' ? 2.5 : 1.8} />
-                            <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'Meds' ? 'text-white' : 'text-blue-200'}`}>Medicinas</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-
-                {/* BOTÓN PLUS CENTRAL (Contraste Blanco/Azul) */}
-                <View className="w-16 justify-center items-center h-20 -top-5">
-                    <TouchableOpacity 
-                        onPress={() => navigation.navigate('AddMedication')}
-                        activeOpacity={0.8}
-                        className="w-14 h-14 bg-white rounded-full items-center justify-center shadow-xl shadow-blue-900 border-[6px] border-blue-600"
-                    >
-                        <Plus size={28} color="#2563eb" strokeWidth={3.5} />
-                    </TouchableOpacity>
-                </View>
-
-                {/* HISTORIAL */}
-                <TouchableOpacity className="items-center flex-1 py-1 pl-4" onPress={() => setActiveTab('History')}>
-                    <View className="items-center flex-row justify-start w-full">
-                        <View className="items-center">
-                            <History size={22} color={activeTab === 'History' ? '#ffffff' : '#bfdbfe'} strokeWidth={activeTab === 'History' ? 2.5 : 1.8} />
-                            <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'History' ? 'text-white' : 'text-blue-200'}`}>Historial</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-
-                {/* AGENDA */}
-                <TouchableOpacity className="items-center w-[18%] py-1" onPress={() => setActiveTab('Schedule')}>
-                    <CalendarDays size={22} color={activeTab === 'Schedule' ? '#ffffff' : '#bfdbfe'} strokeWidth={activeTab === 'Schedule' ? 2.5 : 1.8} />
-                    <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'Schedule' ? 'text-white' : 'text-blue-200'}`}>Agenda</Text>
-                </TouchableOpacity>
-            </View>
+             {/* TAB BAR BRAND COLORS - ESTILO MÉDICO PREMIUM */}
+             <View className="absolute bottom-6 left-2 right-2 h-20 bg-brand-dark rounded-[40px] shadow-2xl shadow-slate-400 dark:shadow-none flex-row items-center px-2 z-40 border border-brand-blue/30">
+                 
+                 {/* INICIO */}
+                 <TouchableOpacity className="items-center w-[18%] py-1" onPress={() => setActiveTab('Home')}>
+                     <Home size={22} color={activeTab === 'Home' ? '#7bba47' : '#94a3b8'} strokeWidth={activeTab === 'Home' ? 2.5 : 1.8} />
+                     <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'Home' ? 'text-brand-green' : 'text-slate-400'}`}>Inicio</Text>
+                 </TouchableOpacity>
+                 
+                 {/* MEDICINAS */}
+                 <TouchableOpacity className="items-center flex-1 py-1 pr-4" onPress={() => setActiveTab('Meds')}>
+                     <View className="items-center flex-row justify-end w-full">
+                         <View className="items-center">
+                             <Pill size={22} color={activeTab === 'Meds' ? '#1f95d5' : '#94a3b8'} strokeWidth={activeTab === 'Meds' ? 2.5 : 1.8} />
+                             <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'Meds' ? 'text-brand-blue' : 'text-slate-400'}`}>Medicinas</Text>
+                         </View>
+                     </View>
+                 </TouchableOpacity>
+ 
+                 {/* BOTÓN PLUS CENTRAL (Contraste Amarillo/Blanco) */}
+                 <View className="w-16 justify-center items-center h-20 -top-5">
+                     <TouchableOpacity 
+                         onPress={() => navigation.navigate('AddMedication')}
+                         activeOpacity={0.8}
+                         className="w-14 h-14 bg-white rounded-full items-center justify-center shadow-xl shadow-brand-dark/40 border-[6px] border-brand-dark"
+                     >
+                         <Plus size={28} color="#fca827" strokeWidth={3.5} />
+                     </TouchableOpacity>
+                 </View>
+ 
+                 {/* HISTORIAL */}
+                 <TouchableOpacity className="items-center flex-1 py-1 pl-4" onPress={() => setActiveTab('History')}>
+                     <View className="items-center flex-row justify-start w-full">
+                         <View className="items-center">
+                             <History size={22} color={activeTab === 'History' ? '#1f95d5' : '#94a3b8'} strokeWidth={activeTab === 'History' ? 2.5 : 1.8} />
+                             <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'History' ? 'text-brand-blue' : 'text-slate-400'}`}>Historial</Text>
+                         </View>
+                     </View>
+                 </TouchableOpacity>
+ 
+                 {/* AGENDA */}
+                 <TouchableOpacity className="items-center w-[18%] py-1" onPress={() => setActiveTab('Schedule')}>
+                     <CalendarDays size={22} color={activeTab === 'Schedule' ? '#7bba47' : '#94a3b8'} strokeWidth={activeTab === 'Schedule' ? 2.5 : 1.8} />
+                     <Text className={`text-[8px] font-bold mt-1 uppercase tracking-tighter ${activeTab === 'Schedule' ? 'text-brand-green' : 'text-slate-400'}`}>Agenda</Text>
+                 </TouchableOpacity>
+             </View>
         </SafeAreaView>
     );
 }

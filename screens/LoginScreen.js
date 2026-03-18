@@ -20,8 +20,8 @@ export default function LoginScreen({ navigation }) {
       <StatusBar style="dark" />
       
       {/* Background Decor Circles */}
-      <View className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-100 rounded-full opacity-50" />
-      <View className="absolute top-20 left-20 w-40 h-40 bg-blue-200 rounded-full opacity-30 blur-2xl" />
+      <View className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-brand-blue/10 rounded-full opacity-50" />
+      <View className="absolute top-20 left-20 w-40 h-40 bg-brand-green/10 rounded-full opacity-30 blur-2xl" />
 
       {/* Header Section */}
       <View className="px-6 pt-6 pb-6">
@@ -99,7 +99,7 @@ export default function LoginScreen({ navigation }) {
 
                 {/* Login Button */}
                 <TouchableOpacity 
-                    className="bg-blue-600 py-4 rounded-xl flex-row justify-center items-center shadow-lg shadow-blue-200 mt-2 active:scale-95 duration-150"
+                    className="bg-brand-blue py-4 rounded-xl flex-row justify-center items-center shadow-lg shadow-brand-blue/20 mt-2 active:scale-95 duration-150"
                     onPress={handleLogin}
                     disabled={loading}
                 >
@@ -108,12 +108,12 @@ export default function LoginScreen({ navigation }) {
                     </Text>
                     <ArrowRight color="white" size={20} strokeWidth={2.5} />
                 </TouchableOpacity>
-
+ 
                 {/* Footer */}
                 <View className="flex-row justify-center mt-8">
                     <Text className="text-slate-400 font-medium">¿No tienes cuenta? </Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                        <Text className="text-blue-500 font-bold">Crear Cuenta</Text>
+                        <Text className="text-brand-blue font-bold">Crear Cuenta</Text>
                     </TouchableOpacity>
                 </View>
 
