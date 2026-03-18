@@ -28,23 +28,15 @@ export default function LoginScreen({ navigation }) {
          {/* Top Nav */}
          <View className="flex-row items-center mb-6">
             <TouchableOpacity onPress={() => navigation.goBack()} className="bg-slate-100 p-2 rounded-lg">
-                <Image 
-                    source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 24, height: 24 }}
-                    resizeMode="contain"
-                />
+                <ShieldCheck size={20} color="#2563eb" />
             </TouchableOpacity>
          </View>
 
          {/* Hero Logo */}
          <View className="items-center mb-6 relative">
              <View className="absolute bg-blue-100 w-40 h-40 rounded-full -z-10 blur-2xl opacity-60 top-0" />
-             <View className="bg-white p-4 rounded-full shadow-2xl shadow-blue-200 border-4 border-slate-50">
-                <Image 
-                    source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 100, height: 100 }}
-                    resizeMode="contain"
-                />
+             <View className="bg-white p-7 rounded-full shadow-2xl shadow-blue-200 border-4 border-slate-50">
+                <Smile size={60} color="#2563eb" strokeWidth={2.5} />
              </View>
          </View>
 
@@ -115,7 +107,7 @@ export default function LoginScreen({ navigation }) {
 
                 {/* Footer */}
                 <View className="flex-row justify-center mt-8">
-                    <Text className="text-slate-400 font-medium">¿Nuevo en MediTrack? </Text>
+                    <Text className="text-slate-400 font-medium">¿No tienes cuenta? </Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                         <Text className="text-blue-500 font-bold">Crear Cuenta</Text>
                     </TouchableOpacity>

@@ -59,11 +59,7 @@ export default function RegisterScreen({ navigation }) {
       <View className="px-6 pt-8 pb-0">
           <View className="flex-row items-center mb-4">
             <TouchableOpacity onPress={() => navigation.goBack()} className="bg-slate-100 p-2 rounded-lg">
-                <Image 
-                    source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 24, height: 24 }}
-                    resizeMode="contain"
-                />
+                <ShieldCheck size={20} color="#0d9488" />
             </TouchableOpacity>
          </View>
 
