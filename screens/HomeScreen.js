@@ -400,7 +400,7 @@ export default function HomeScreen({ navigation }) {
     
                     <View className="flex-row justify-between items-end mt-auto">
                         <View className="flex-1 mr-2">
-                            <Text className="text-white font-black text-4xl tracking-tighter mb-1">{formatToAmPm(nextDose.scheduledTime)}</Text>
+                            <Text className="text-white font-black text-3xl tracking-tighter mb-1">{formatToAmPm(nextDose.scheduledTime)}</Text>
                             <View className={`${nextDose.status === 'missed' ? 'bg-red-400/50' : 'bg-blue-500/50'} self-start px-2 py-0.5 rounded-md mb-2`}>
                                 <Text className="text-white text-xs font-black uppercase tracking-widest">{nextDose.dosage}</Text>
                             </View>
