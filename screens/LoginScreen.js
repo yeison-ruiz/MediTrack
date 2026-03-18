@@ -22,16 +22,17 @@ export default function LoginScreen({ navigation }) {
       {/* Background Decor */}
       <View className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-brand-blue/5 rounded-full" />
 
-      {/* Header Section Compact (Single Row) */}
-      <View className="px-6 pt-2 pb-1 flex-row items-center justify-center">
-         <View className="bg-white p-3 rounded-full shadow-lg border-2 border-slate-50 mr-4">
+      {/* Header Section Vertical & Mega-Compact */}
+      <View className="px-6 pt-1 items-center">
+         <View className="bg-white p-4 rounded-full shadow-2xl shadow-brand-blue/20 mb-1 border-2 border-slate-50">
             <Image 
                 source={require('../assets/logomeditrack.png')} 
-                style={{ width: 60, height: 60 }}
+                style={{ width: 90, height: 90 }}
                 resizeMode="contain"
             />
          </View>
-         <Text className="text-3xl font-black text-brand-dark">Bienvenido</Text>
+         <Text className="text-2xl font-black text-brand-dark">Bienvenido</Text>
+         <Text className="text-slate-400 text-[10px] text-center px-8">Tu salud, a tiempo. Inicia sesión.</Text>
       </View>
 
       {/* Form Card Compact */}
