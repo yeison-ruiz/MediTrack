@@ -51,115 +51,112 @@ export default function RegisterScreen({ navigation }) {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="dark" />
       
-      {/* Background Decor subtle */}
-      <View className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-brand-blue/5 rounded-full" />
+      {/* Dynamic Background Elements */}
+      <View className="absolute top-[-50] right-[-50] w-[300] h-[300] bg-brand-blue/5 rounded-full" />
+      <View className="absolute bottom-[-100] left-[-50] w-[400] h-[400] bg-brand-green/5 rounded-full" />
 
-      <View className="flex-1 px-8 pt-10">
-          {/* Header Section Vertical */}
-          <View className="items-center mb-10">
-            <View className="bg-white p-4 rounded-full shadow-2xl shadow-brand-blue/20 mb-4 border-2 border-slate-50">
+      <View className="flex-1 justify-center px-10">
+          {/* Central Logo Experience */}
+          <View className="items-center mb-12">
+            <View className="bg-white p-6 rounded-[35px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-6">
                 <Image 
                     source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 120, height: 120 }}
+                    style={{ width: 110, height: 110 }}
                     resizeMode="contain"
                 />
             </View>
-            <Text className="text-3xl font-black text-brand-dark">Crea tu Cuenta</Text>
-            <Text className="text-slate-400 text-xs text-center mt-1">Gestiona tu salud profesionalmente.</Text>
+            <Text className="text-4xl font-black text-brand-dark tracking-tighter">Hola!</Text>
+            <Text className="text-slate-400 text-sm font-medium mt-1">Crea tu cuenta para empezar</Text>
           </View>
 
-          {/* Form Content */}
+          {/* Premium Form Inputs */}
           <KeyboardAvoidingView 
               behavior={Platform.OS === "ios" ? "padding" : undefined} 
-              className="flex-1"
           >
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
-                  <View className="space-y-4">
+                  <View className="space-y-5">
                       
-                      {/* AVATAR MINI */}
+                      {/* Avatar Picker Modern */}
                       <TouchableOpacity 
                           onPress={openAvatarCreator}
-                          className="flex-row items-center bg-brand-blue/5 p-2 rounded-xl border border-brand-blue/10"
+                          className="flex-row items-center bg-slate-50 border border-slate-100 p-3 rounded-2xl shadow-sm"
                       >
-                          <View className="w-10 h-10 rounded-full bg-white border border-brand-blue/20 items-center justify-center overflow-hidden mr-3">
+                          <View className="w-12 h-12 rounded-2xl bg-brand-blue/10 items-center justify-center overflow-hidden mr-4">
                               {avatarUrl && avatarUrl.startsWith('http') ? (
                                   <Image source={{ uri: avatarUrl }} className="w-full h-full" />
                               ) : avatarUrl ? (
-                                  <Text className="text-xl">{avatarUrl}</Text>
-                               ) : (
-                                  <UserPlus size={18} color="#1f95d5" />
+                                  <Text className="text-2xl">{avatarUrl}</Text>
+                              ) : (
+                                  <UserPlus size={22} color="#1f95d5" strokeWidth={2.5} />
                               )}
                           </View>
-                          <Text className="flex-1 text-brand-dark font-bold text-sm">{avatarUrl ? 'Avatar Listo' : 'Elige tu Avatar'}</Text>
-                          <Plus size={14} color="#1f95d5" strokeWidth={3} className="mr-2" />
+                          <View className="flex-1">
+                             <Text className="text-brand-dark font-black text-sm">{avatarUrl ? 'Avatar Listo' : 'Elige tu Avatar'}</Text>
+                             <Text className="text-slate-400 text-[10px]">Personaliza tu perfil</Text>
+                          </View>
+                          <Plus size={16} color="#1f95d5" strokeWidth={3} className="mr-2" />
                       </TouchableOpacity>
 
-                      {/* Inputs set */}
-                      <View className="space-y-3.5">
-                          <View>
-                              <Text className="text-[10px] font-black text-brand-dark/40 tracking-widest mb-1.5 ml-1 uppercase">Nombre Completo</Text>
-                              <View className="flex-row items-center border border-slate-100 rounded-2xl px-4 bg-slate-50 h-13">
-                                  <User size={18} color="#94a3b8" />
-                                  <TextInput
-                                      className="flex-1 ml-3 text-brand-dark font-bold text-sm h-full"
-                                      placeholder="Juan Pérez"
-                                      value={name}
-                                      onChangeText={setName}
-                                  />
-                              </View>
+                      <View className="space-y-4">
+                          <View className="bg-slate-50 border border-slate-100 rounded-2xl px-5 h-15 flex-row items-center shadow-sm">
+                              <User size={20} color="#1f95d5" />
+                              <TextInput
+                                  className="flex-1 ml-4 text-brand-dark font-bold text-base h-full"
+                                  placeholder="Nombre completo"
+                                  value={name}
+                                  onChangeText={setName}
+                                  placeholderTextColor="#94a3b8"
+                              />
                           </View>
 
-                          <View>
-                              <Text className="text-[10px] font-black text-brand-dark/40 tracking-widest mb-1.5 ml-1 uppercase">Email</Text>
-                              <View className="flex-row items-center border border-slate-100 rounded-2xl px-4 bg-slate-50 h-13">
-                                  <Mail size={18} color="#94a3b8" />
-                                  <TextInput
-                                      className="flex-1 ml-3 text-brand-dark font-bold text-sm h-full"
-                                      placeholder="tu@correo.com"
-                                      value={email}
-                                      onChangeText={setEmail}
-                                      autoCapitalize="none"
-                                  />
-                              </View>
+                          <View className="bg-slate-50 border border-slate-100 rounded-2xl px-5 h-15 flex-row items-center shadow-sm">
+                              <Mail size={20} color="#1f95d5" />
+                              <TextInput
+                                  className="flex-1 ml-4 text-brand-dark font-bold text-base h-full"
+                                  placeholder="Correo electrónico"
+                                  value={email}
+                                  onChangeText={setEmail}
+                                  autoCapitalize="none"
+                                  placeholderTextColor="#94a3b8"
+                              />
                           </View>
 
-                          <View>
-                              <Text className="text-[10px] font-black text-brand-dark/40 tracking-widest mb-1.5 ml-1 uppercase">Contraseña</Text>
-                              <View className="flex-row items-center border border-slate-100 rounded-2xl px-4 bg-slate-50 h-13">
-                                  <Lock size={18} color="#94a3b8" />
-                                  <TextInput
-                                      className="flex-1 ml-3 text-brand-dark font-bold text-sm h-full"
-                                      placeholder="••••••••"
-                                      value={password}
-                                      onChangeText={setPassword}
-                                      secureTextEntry={!showPassword}
-                                  />
-                                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                      {showPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
-                                  </TouchableOpacity>
-                              </View>
+                          <View className="bg-slate-50 border border-slate-100 rounded-2xl px-5 h-15 flex-row items-center shadow-sm">
+                              <Lock size={20} color="#1f95d5" />
+                              <TextInput
+                                  className="flex-1 ml-4 text-brand-dark font-bold text-base h-full"
+                                  placeholder="Contraseña"
+                                  value={password}
+                                  onChangeText={setPassword}
+                                  secureTextEntry={!showPassword}
+                                  placeholderTextColor="#94a3b8"
+                              />
+                              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                  {showPassword ? <EyeOff size={20} color="#94a3b8" /> : <Eye size={20} color="#94a3b8" />}
+                              </TouchableOpacity>
                           </View>
                       </View>
 
-                      {/* Action */}
+                      {/* Main Action Button */}
                       <TouchableOpacity 
-                          className="bg-brand-blue py-4.5 rounded-2xl flex-row justify-center items-center shadow-xl shadow-brand-blue/20 mt-2"
+                          className="bg-brand-blue py-5 rounded-[22px] flex-row justify-center items-center shadow-2xl shadow-brand-blue/30 mt-4 active:scale-95 duration-150"
                           onPress={handleRegister}
                           disabled={loading}
                       >
-                          <Text className="text-white font-black text-lg mr-2">
-                              {loading ? 'Procesando...' : 'Crear Cuenta'}
+                          <Text className="text-white font-black text-xl mr-3">
+                              Registrarme
                           </Text>
-                          <ArrowRight color="white" size={20} strokeWidth={3} />
+                          <ArrowRight color="white" size={24} strokeWidth={3} />
                       </TouchableOpacity>
 
                       {/* Footer */}
-                      <View className="flex-row justify-center mt-2">
-                          <Text className="text-slate-400 font-medium">¿Ya tienes cuenta? </Text>
-                          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                              <Text className="text-brand-blue font-bold">Inicia Sesión</Text>
-                          </TouchableOpacity>
-                      </View>
+                      <TouchableOpacity 
+                        className="flex-row justify-center mt-4 p-2"
+                        onPress={() => navigation.navigate('Login')}
+                      >
+                          <Text className="text-slate-400 font-bold">¿Ya tienes cuenta? </Text>
+                          <Text className="text-brand-blue font-black">Entrar</Text>
+                      </TouchableOpacity>
                   </View>
               </ScrollView>
           </KeyboardAvoidingView>

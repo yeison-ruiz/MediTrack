@@ -19,89 +19,87 @@ export default function LoginScreen({ navigation }) {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="dark" />
       
-      {/* Background Decor subtle */}
-      <View className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-brand-blue/5 rounded-full" />
+      {/* Background Decor Elements */}
+      <View className="absolute top-[-50] right-[-50] w-[300] h-[300] bg-brand-blue/5 rounded-full" />
+      <View className="absolute bottom-[-100] left-[-50] w-[400] h-[400] bg-brand-green/5 rounded-full" />
 
-      <View className="flex-1 px-8 pt-10">
-          {/* Header Section Vertical */}
-          <View className="items-center mb-10">
-            <View className="bg-white p-4 rounded-full shadow-2xl shadow-brand-blue/20 mb-4 border-2 border-slate-50">
+      <View className="flex-1 justify-center px-10">
+          {/* Central Animated Hero */}
+          <View className="items-center mb-12">
+            <View className="bg-white p-6 rounded-[35px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-6">
                 <Image 
                     source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 120, height: 120 }}
+                    style={{ width: 110, height: 110 }}
                     resizeMode="contain"
                 />
             </View>
-            <Text className="text-3xl font-black text-brand-dark">Bienvenido</Text>
-            <Text className="text-slate-400 text-xs text-center mt-1">Tu salud, a tiempo. Inicia sesión.</Text>
+            <Text className="text-4xl font-black text-brand-dark tracking-tighter">Bienvenido</Text>
+            <Text className="text-slate-400 text-sm font-medium mt-1">Gestiona tu salud con un toque</Text>
           </View>
 
           {/* Form Content */}
           <KeyboardAvoidingView 
               behavior={Platform.OS === "ios" ? "padding" : undefined} 
-              className="flex-1"
           >
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
                   <View className="space-y-5">
                       
-                      {/* Email Input */}
-                      <View>
-                          <Text className="text-[10px] font-black text-brand-dark/40 tracking-widest mb-1.5 ml-1 uppercase">Correo Electrónico</Text>
-                          <View className="flex-row items-center border border-slate-100 rounded-2xl px-4 bg-slate-50 h-14">
-                              <Mail size={18} color="#94a3b8" />
+                      {/* Inputs Space */}
+                      <View className="space-y-4">
+                          <View className="bg-slate-50 border border-slate-100 rounded-2xl px-5 h-15 flex-row items-center shadow-sm">
+                              <Mail size={20} color="#1f95d5" />
                               <TextInput
-                                  className="flex-1 ml-3 text-brand-dark font-bold text-base h-full"
-                                  placeholder="tu@correo.com"
+                                  className="flex-1 ml-4 text-brand-dark font-bold text-base h-full"
+                                  placeholder="Correo electrónico"
                                   value={email}
                                   onChangeText={setEmail}
                                   autoCapitalize="none"
                                   keyboardType="email-address"
+                                  placeholderTextColor="#94a3b8"
                               />
                           </View>
-                      </View>
 
-                      {/* Password Input */}
-                      <View>
-                          <View className="flex-row justify-between items-center mb-1.5 ml-1">
-                              <Text className="text-[10px] font-black text-brand-dark/40 tracking-widest uppercase">Contraseña</Text>
-                              <TouchableOpacity>
-                                  <Text className="text-brand-blue font-bold text-xs">¿La olvidaste?</Text>
-                              </TouchableOpacity>
-                          </View>
-                          <View className="flex-row items-center border border-slate-100 rounded-2xl px-4 bg-slate-50 h-14">
-                              <Lock size={18} color="#94a3b8" />
+                          <View className="bg-slate-50 border border-slate-100 rounded-2xl px-5 h-15 flex-row items-center shadow-sm">
+                              <Lock size={20} color="#1f95d5" />
                               <TextInput
-                                  className="flex-1 ml-3 text-brand-dark font-bold text-base h-full"
-                                  placeholder="••••••••"
+                                  className="flex-1 ml-4 text-brand-dark font-bold text-base h-full"
+                                  placeholder="Contraseña"
                                   value={password}
                                   onChangeText={setPassword}
                                   secureTextEntry={!showPassword}
+                                  placeholderTextColor="#94a3b8"
                               />
-                               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                   {showPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
-                               </TouchableOpacity>
+                              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                                  {showPassword ? <EyeOff size={20} color="#94a3b8" /> : <Eye size={20} color="#94a3b8" />}
+                              </TouchableOpacity>
                           </View>
                       </View>
 
-                      {/* Login Button */}
+                      {/* Recover Password Link */}
+                      <TouchableOpacity className="self-end px-1">
+                          <Text className="text-brand-blue font-black text-xs">Olvide mi contraseña</Text>
+                      </TouchableOpacity>
+
+                      {/* Action Button */}
                       <TouchableOpacity 
-                          className="bg-brand-blue py-4.5 rounded-2xl flex-row justify-center items-center shadow-xl shadow-brand-blue/30 mt-2 active:scale-95 duration-150"
+                          className="bg-brand-blue py-5 rounded-[22px] flex-row justify-center items-center shadow-2xl shadow-brand-blue/30 mt-2 active:scale-95 duration-150"
                           onPress={handleLogin}
                           disabled={loading}
                       >
-                          <Text className="text-white font-black text-lg mr-2">
-                              {loading ? 'Ingresando...' : 'Entrar'}
+                          <Text className="text-white font-black text-xl mr-3 font-outfit">
+                              {loading ? 'Entrando...' : 'Ingresar'}
                           </Text>
-                          <ArrowRight color="white" size={22} strokeWidth={3} />
+                          <ArrowRight color="white" size={24} strokeWidth={3} />
                       </TouchableOpacity>
 
                       {/* Footer */}
-                      <View className="flex-row justify-center mt-2">
-                          <Text className="text-slate-400 font-medium">¿No tienes cuenta? </Text>
-                          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                              <Text className="text-brand-blue font-bold">Crear Cuenta</Text>
-                          </TouchableOpacity>
-                      </View>
+                      <TouchableOpacity 
+                        className="flex-row justify-center mt-4 p-2"
+                        onPress={() => navigation.navigate('Register')}
+                      >
+                          <Text className="text-slate-400 font-bold">¿No tienes cuenta? </Text>
+                          <Text className="text-brand-blue font-black">Registrarme</Text>
+                      </TouchableOpacity>
 
                   </View>
               </ScrollView>
