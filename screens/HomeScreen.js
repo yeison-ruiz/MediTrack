@@ -279,21 +279,21 @@ export default function HomeScreen({ navigation }) {
                            <Pill size={20} color={darkMode ? "#cbd5e1" : "#94a3b8"} />
                        )}
                    </View>
-                    <View className="flex-1">
-                       <View className="flex-row items-center mb-0.5">
-                           <Text numberOfLines={1} className={`text-xs font-bold uppercase tracking-wider flex-shrink-0 ${isMissed ? 'text-red-400' : 'text-slate-400'}`}>
-                                {isMissed ? 'OLVIDADA • ' : 'PENDIENTE • '}{formatToAmPm(item.scheduledTime)}
-                           </Text>
-                           {item.patientType === 'pet' && (
-                                <View className="bg-orange-100 dark:bg-orange-900/40 px-1.5 py-0.5 rounded ml-2 flex-row items-center flex-shrink-1">
-                                    <Text className="text-[10px] mr-1">🐾</Text>
-                                    <Text className="text-[10px] font-bold text-orange-700 dark:text-orange-400 uppercase">{item.patientName}</Text>
-                                </View>
-                           )}
-                       </View>
-                       <Text className="text-lg font-bold text-slate-800 dark:text-white">{item.name}</Text>
-                       <Text className="text-slate-500 dark:text-slate-400 text-sm">{item.dosage}</Text>
-                   </View>
+                     <View className="flex-1">
+                        <View className="flex-row items-center mb-1">
+                            <Text className={`text-[10px] font-black uppercase tracking-widest ${isMissed ? 'text-red-400' : 'text-slate-400'}`}>
+                                 {isMissed ? 'OLVIDADA • ' : 'PENDIENTE • '}{formatToAmPm(item.scheduledTime)}
+                            </Text>
+                            {item.patientType === 'pet' && (
+                                 <View className="bg-orange-100 dark:bg-orange-900/40 px-2 py-0.5 rounded-full ml-auto flex-row items-center">
+                                     <Text className="text-[10px] mr-1">🐾</Text>
+                                     <Text className="text-[9px] font-black text-orange-700 dark:text-orange-400 uppercase tracking-tight">{item.patientName}</Text>
+                                 </View>
+                            )}
+                        </View>
+                        <Text className="text-lg font-bold text-slate-800 dark:text-white leading-tight">{item.name}</Text>
+                        <Text className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">{item.dosage}</Text>
+                    </View>
                    {!isMissed && (
                        <View className="h-6 w-6 rounded-full border-2 border-slate-200 dark:border-slate-600" />
                    )}
