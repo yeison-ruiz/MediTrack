@@ -251,53 +251,51 @@ export default function HomeScreen({ navigation }) {
     const mood = getMoodData(stats.taken, stats.total, stats.missed);
 
     const renderDoseItem = ({ item }) => {
-        // Estilo 1: Tomado
-        if (item.isTaken) {
-            return (
-                <View className="flex-row items-center bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl mb-3 border border-slate-100 dark:border-slate-700 opacity-60">
-                    <View className="bg-slate-200 dark:bg-slate-700 p-2 rounded-full mr-4">
-                        <Check size={20} color={darkMode ? "#94a3b8" : "#64748b"} />
-                    </View>
-                    <View className="flex-1">
-                        <Text numberOfLines={1} className="text-xs text-slate-400 font-bold uppercase tracking-wider">TOMADA • {formatToAmPm(item.scheduledTime)}</Text>
-                        <Text className="text-lg font-bold text-slate-700 dark:text-slate-300 line-through">{item.name}</Text>
-                        <Text className="text-slate-400 text-sm">{item.dosage}</Text>
-                    </View>
-                </View>
-            );
-        }
-
         const isMissed = item.status === 'missed';
+        const isTaken = item.isTaken;
 
         return (
-           <TouchableOpacity onPress={() => navigation.navigate('MedicationDetails', { medication: item })} activeOpacity={0.7}>
-               <View className={`flex-row items-center bg-white dark:bg-slate-800 p-4 rounded-2xl mb-3 border ${isMissed ? 'border-red-100 dark:border-red-900' : 'border-slate-100 dark:border-slate-700'}`}>
-                   <View className={`p-2 rounded-full mr-4 ${isMissed ? 'bg-red-50 dark:bg-red-900/20' : 'bg-slate-100 dark:bg-slate-700'}`}>
-                       {isMissed ? (
-                           <AlertTriangle size={20} color="#ef4444" />
-                       ) : (
-                           <Pill size={20} color={darkMode ? "#cbd5e1" : "#94a3b8"} />
-                       )}
-                   </View>
-                     <View className="flex-1">
-                        <View className="flex-row items-center mb-1">
-                            <Text className={`text-[10px] font-black uppercase tracking-widest ${isMissed ? 'text-red-400' : 'text-slate-400'}`}>
-                                 {isMissed ? 'OLVIDADA • ' : 'PENDIENTE • '}{formatToAmPm(item.scheduledTime)}
+           <TouchableOpacity 
+                onPress={() => navigation.navigate('MedicationDetails', { medication: item })} 
+                activeOpacity={0.7}
+                className="mb-3"
+            >
+                <View className={`flex-row items-center bg-white dark:bg-slate-800 p-4 rounded-3xl border-b-4 ${isTaken ? 'border-slate-200 opacity-60' : isMissed ? 'border-red-500' : 'border-blue-500'} shadow-sm`}>
+                    <View className={`p-3 rounded-2xl mr-4 ${isTaken ? 'bg-slate-100' : isMissed ? 'bg-red-50' : 'bg-blue-50'} dark:bg-slate-700`}>
+                        {isTaken ? (
+                            <Check size={22} color="#64748b" />
+                        ) : isMissed ? (
+                            <AlertTriangle size={22} color="#ef4444" />
+                        ) : (
+                            <Pill size={22} color="#3b82f6" />
+                        )}
+                    </View>
+
+                    <View className="flex-1">
+                        <View className="flex-row justify-between items-center mb-1">
+                            <View className={`${isTaken ? 'bg-slate-200' : isMissed ? 'bg-red-100' : 'bg-blue-100'} px-2 py-0.5 rounded-md`}>
+                                <Text className={`text-[9px] font-black uppercase tracking-tighter ${isTaken ? 'text-slate-500' : isMissed ? 'text-red-600' : 'text-blue-600'}`}>
+                                    {isTaken ? 'TOMADA' : isMissed ? 'OLVIDADA' : 'PENDIENTE'}
+                                </Text>
+                            </View>
+                            <Text className="text-slate-900 dark:text-white font-black text-sm tracking-tighter">
+                                {formatToAmPm(item.scheduledTime)}
                             </Text>
+                        </View>
+                        <Text className={`text-lg font-bold text-slate-800 dark:text-white leading-tight ${isTaken ? 'line-through' : ''}`}>{item.name}</Text>
+                        <View className="flex-row items-center mt-1">
+                            <Text className="text-slate-400 dark:text-slate-500 text-xs font-medium">{item.dosage}</Text>
                             {item.patientType === 'pet' && (
-                                 <View className="bg-orange-100 dark:bg-orange-900/40 px-2 py-0.5 rounded-full ml-auto flex-row items-center">
-                                     <Text className="text-[10px] mr-1">🐾</Text>
-                                     <Text className="text-[9px] font-black text-orange-700 dark:text-orange-400 uppercase tracking-tight">{item.patientName}</Text>
-                                 </View>
+                                <View className="flex-row items-center ml-2">
+                                    <Text className="text-[10px] text-slate-300 mx-1">•</Text>
+                                    <View className="bg-orange-50 px-1.5 py-0.5 rounded flex-row items-center">
+                                        <Text className="text-[9px] font-bold text-orange-600 uppercase tracking-tight">🐾 {item.patientName}</Text>
+                                    </View>
+                                </View>
                             )}
                         </View>
-                        <Text className="text-lg font-bold text-slate-800 dark:text-white leading-tight">{item.name}</Text>
-                        <Text className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">{item.dosage}</Text>
                     </View>
-                   {!isMissed && (
-                       <View className="h-6 w-6 rounded-full border-2 border-slate-200 dark:border-slate-600" />
-                   )}
-               </View>
+                </View>
            </TouchableOpacity>
         );
      };
@@ -400,10 +398,13 @@ export default function HomeScreen({ navigation }) {
                         })}
                     </View>
     
-                    <View className="flex-row justify-between items-center mt-auto">
-                        <View className="flex-1 mr-3">
-                            <Text className="text-white font-bold text-lg leading-6">Hora: {formatToAmPm(nextDose.scheduledTime)} • {nextDose.dosage}</Text>
-                            <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-200'} text-xs mt-1 leading-4`}>
+                    <View className="flex-row justify-between items-end mt-auto">
+                        <View className="flex-1 mr-2">
+                            <View className="flex-row items-baseline mb-0.5">
+                                <Text className="text-white font-black text-2xl tracking-tighter">{formatToAmPm(nextDose.scheduledTime)}</Text>
+                                <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-100'} text-xs font-bold ml-2 opacity-80 uppercase tracking-widest`}>• {nextDose.dosage}</Text>
+                            </View>
+                            <Text numberOfLines={2} className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-200'} text-xs leading-4`}>
                                 {nextDose.notes || "Según receta"}
                             </Text>
                         </View>
