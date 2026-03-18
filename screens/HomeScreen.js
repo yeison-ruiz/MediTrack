@@ -37,7 +37,7 @@ export default function HomeScreen({ navigation }) {
 
     const [timeline, setTimeline] = useState([]);
     const [nextDose, setNextDose] = useState(null);
-    const [stats, setStats] = useState({ taken: 0, total: 0, adherence: 0 });
+    const [stats, setStats] = useState({ taken: 0, total: 0, adherence: 0, missed: 0 });
     const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
     
     // Modal State
@@ -425,7 +425,7 @@ export default function HomeScreen({ navigation }) {
                                 <View className="flex-1">
                                     <Text className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`} numberOfLines={1}>{mood.label}</Text>
                                     <View className="flex-row items-center">
-                                        <Text className="text-[10px] font-bold opacity-50 dark:text-slate-400">{Math.round(stats.adherence)}%</Text>
+                                        <Text className="text-[10px] font-bold opacity-50 dark:text-slate-400">{Math.round(stats.adherence || 0)}%</Text>
                                     </View>
                                 </View>
                             </View>
