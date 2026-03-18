@@ -35,10 +35,10 @@ export default function LoginScreen({ navigation }) {
          {/* Hero Logo */}
          <View className="items-center mb-6 relative">
              <View className="absolute bg-blue-100 w-40 h-40 rounded-full -z-10 blur-2xl opacity-60 top-0" />
-             <View className="bg-white p-6 rounded-full shadow-2xl shadow-blue-200 border-4 border-slate-50">
+             <View className="bg-white p-8 rounded-full shadow-2xl shadow-blue-200 border-4 border-slate-50">
                 <Image 
                     source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 110, height: 110 }}
+                    style={{ width: 120, height: 120 }}
                     resizeMode="contain"
                 />
              </View>

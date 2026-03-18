@@ -67,8 +67,20 @@ export default function RegisterScreen({ navigation }) {
             </TouchableOpacity>
          </View>
 
+         {/* Hero Logo */}
+         <View className="items-center mb-4 relative">
+             <View className="absolute bg-teal-100 w-32 h-32 rounded-full -z-10 blur-2xl opacity-60 top-0" />
+             <View className="bg-white p-5 rounded-full shadow-2xl shadow-teal-200 border-4 border-slate-50">
+                <Image 
+                    source={require('../assets/logomeditrack.png')} 
+                    style={{ width: 90, height: 90 }}
+                    resizeMode="contain"
+                />
+             </View>
+         </View>
+
          <Text className="text-3xl font-extrabold text-slate-900 text-center mb-1">Únete</Text>
-         <Text className="text-slate-500 text-center px-8 leading-5 mb-4">
+         <Text className="text-slate-500 text-center px-8 leading-5 mb-2">
             Crea tu cuenta gratis.
          </Text>
 
