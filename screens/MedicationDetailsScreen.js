@@ -25,7 +25,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
     };
 
     const darkMode = useSettingsStore(state => state.darkMode);
-    const { deleteMedication, togglePauseMedication } = useMedicationStore();
+    const { deleteMedication } = useMedicationStore();
     const { showAlert } = useAlert();
 
     const times = (() => {
@@ -36,23 +36,6 @@ export default function MedicationDetailsScreen({ navigation, route }) {
 
     const handleEdit = () => {
         navigation.navigate('AddMedication', { medToEdit: med });
-    };
-
-    const handlePause = async () => {
-        const title = med.paused ? "¿Reanudar tratamiento?" : "¿Pausar tratamiento?";
-        const message = med.paused 
-            ? "Se volverán a activar los recordatorios para las próximas horas programadas."
-            : "Se detendrán todos los recordatorios hasta que decidas reanudarlo.";
-            
-        Alert.alert(title, message, [
-            { text: "Cancelar", style: "cancel" },
-            { 
-                text: med.paused ? "Reanudar" : "Pausar", 
-                onPress: async () => {
-                    await togglePauseMedication(med.id);
-                } 
-            }
-        ]);
     };
 
     const handleDelete = () => {
@@ -114,11 +97,6 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                 
                 {/* 1. HERO CARD */}
                 <View className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 mb-6 mt-4 items-center overflow-hidden">
-                    {med.paused && (
-                        <View className="absolute top-4 right-4 z-10 bg-amber-100 dark:bg-amber-900/50 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
-                             <Text className="text-amber-700 dark:text-amber-200 text-[10px] font-bold">PAUSADO</Text>
-                        </View>
-                    )}
                     <View className="w-full h-40 bg-blue-50 dark:bg-blue-900/40 rounded-2xl mb-4 items-center justify-center relative overflow-hidden">
                         {/* Abstract Decorative Circles */}
                         <View className="absolute top-0 left-0 w-20 h-20 bg-blue-100 dark:bg-blue-800/50 rounded-full -translate-x-10 -translate-y-10" />
@@ -126,14 +104,14 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         
                         {/* Dynamic Icon based on Type */}
                         {(med.type === 'Syrup' || med.type === 'Jarabe') ? (
-                            <Utensils size={80} color={med.paused ? "#94a3b8" : "#3b82f6"} /> 
+                            <Utensils size={80} color="#3b82f6" /> 
                         ) : (med.type === 'Injection' || med.type === 'Inyección') ? (
-                            <Box size={80} color={med.paused ? "#94a3b8" : "#3b82f6"} /> 
+                            <Box size={80} color="#3b82f6" /> 
                         ) : (
-                            <Pill size={80} color={med.paused ? "#94a3b8" : "#3b82f6"} />
+                            <Pill size={80} color="#3b82f6" />
                         )}
                     </View>
-                    <Text className={`text-2xl font-bold mb-1 ${med.paused ? 'text-slate-400' : 'text-slate-900 dark:text-white'}`}>{med.name}</Text>
+                    <Text className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{med.name}</Text>
                     <Text className="text-xs font-bold text-slate-400 tracking-widest uppercase">
                         TRATAMIENTO • {translateType(med.type)}
                     </Text>
@@ -185,27 +163,13 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                     </View>
 
                     {/* ACTIONS ROW */}
-                    <View className="flex-row space-x-3 mb-6">
-                        <TouchableOpacity 
-                            onPress={handlePause}
-                            className={`flex-1 ${med.paused ? 'bg-green-100 dark:bg-green-900/30 border-green-200' : 'bg-slate-100 dark:bg-slate-700 border-slate-200'} py-3 rounded-xl flex-row items-center justify-center border`}
-                        >
-                            {med.paused ? (
-                                <Clock size={20} color="#16a34a" />
-                            ) : (
-                                <PauseCircle size={20} color={darkMode ? "#e2e8f0" : "#475569"} />
-                            )}
-                            <Text className={`font-bold ml-2 ${med.paused ? 'text-green-700 dark:text-green-400' : 'text-slate-600 dark:text-slate-200'}`}>
-                                {med.paused ? "Reanudar" : "Pausar"}
-                            </Text>
-                        </TouchableOpacity>
-
+                    <View className="flex-row mb-6">
                         <TouchableOpacity 
                             onPress={handleEdit}
-                            className="flex-[2] bg-blue-600 py-3 rounded-xl flex-row items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none"
+                            className="flex-1 bg-blue-600 py-4 rounded-xl flex-row items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none"
                         >
                             <Edit2 size={20} color="white" />
-                            <Text className="font-bold text-white ml-2">Editar Medicamento</Text>
+                            <Text className="font-bold text-white ml-2 text-base">Editar Medicamento</Text>
                         </TouchableOpacity>
                     </View>
 
