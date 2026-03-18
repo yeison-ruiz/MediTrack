@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import { StatusBar } from 'expo-status-bar';
-import { Briefcase, ArrowRight, UserPlus, Mail, Lock, Eye, EyeOff, User, Smile, ShieldCheck, Plus } from 'lucide-react-native';
+import { Briefcase, ArrowRight, UserPlus, Mail, Lock, Eye, EyeOff, User, Smile, ShieldCheck, Plus, Heart, Stethoscope, Activity } from 'lucide-react-native';
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -58,15 +58,15 @@ export default function RegisterScreen({ navigation }) {
       <View className="absolute bottom-[20%] right-[-60] w-[220] h-[220] bg-brand-green/12 rounded-full" />
       <View className="absolute bottom-[-50] left-[10%] w-[350] h-[350] bg-brand-blue/10 rounded-full" />
 
-      {/* Visible Faded Large Icons */}
+      {/* Visible Faded Large Medical Icons */}
       <View className="absolute top-[15%] left-[10%] opacity-[0.12] rotate-12">
-          <Plus size={110} color="#1f95d5" strokeWidth={1.5} />
+          <Heart size={110} color="#1f95d5" strokeWidth={1.5} />
       </View>
       <View className="absolute bottom-[30%] right-[10%] opacity-[0.1] -rotate-12">
-          <UserPlus size={130} color="#10b981" strokeWidth={1.5} />
+          <Stethoscope size={130} color="#10b981" strokeWidth={1.5} />
       </View>
       <View className="absolute top-[55%] right-[20%] opacity-[0.08] rotate-45">
-          <Mail size={90} color="#1f95d5" strokeWidth={1.5} />
+          <Activity size={90} color="#1f95d5" strokeWidth={1.5} />
       </View>
 
       <View className="flex-1 justify-center px-10">

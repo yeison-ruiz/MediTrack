@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import { StatusBar } from 'expo-status-bar';
-import { Briefcase, ArrowRight, ShieldCheck, Mail, Lock, Eye, EyeOff, Fingerprint, Smile } from 'lucide-react-native';
+import { Briefcase, ArrowRight, ShieldCheck, Mail, Lock, Eye, EyeOff, Fingerprint, Smile, Activity, Heart } from 'lucide-react-native';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -26,12 +26,12 @@ export default function LoginScreen({ navigation }) {
       <View className="absolute bottom-[10%] left-[10%] w-[200] h-[200] bg-brand-green/15 rounded-full" />
       <View className="absolute bottom-[-100] right-[-30] w-[450] h-[450] bg-brand-blue/12 rounded-full" />
 
-      {/* Floating Background Icons - Visible */}
+      {/* Floating Background Medical Icons - Visible */}
       <View className="absolute top-[25%] right-[12%] opacity-[0.14] rotate-12">
-          <Lock size={130} color="#1f95d5" strokeWidth={1.5} />
+          <Activity size={130} color="#1f95d5" strokeWidth={1.5} />
       </View>
-      <View className="absolute bottom-[30%] left-[10%] opacity-[0.1] -rotate-45">
-          <Mail size={110} color="#10b981" strokeWidth={1.5} />
+      <View className="absolute bottom-[30%] left-[10%] opacity-[0.11] -rotate-45">
+          <Heart size={110} color="#10b981" strokeWidth={1.5} />
       </View>
 
       <View className="flex-1 justify-center px-10">
