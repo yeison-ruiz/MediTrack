@@ -22,21 +22,23 @@ export default function LoginScreen({ navigation }) {
       {/* Background Decor */}
       <View className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-brand-blue/5 rounded-full" />
 
-      {/* Header Section Vertical & Mega-Compact */}
-      <View className="px-6 pt-1 items-center">
-         <View className="bg-white p-4 rounded-full shadow-2xl shadow-brand-blue/20 mb-1 border-2 border-slate-50">
+      {/* Header Section MEGA-IMPACT (Vertical with Overlap) */}
+      <View className="px-6 pt-0 items-center z-10">
+         <View className="bg-white p-6 rounded-full shadow-2xl shadow-brand-blue/40 border-2 border-slate-50 mb-[-30px]">
             <Image 
                 source={require('../assets/logomeditrack.png')} 
-                style={{ width: 90, height: 90 }}
+                style={{ width: 120, height: 120 }}
                 resizeMode="contain"
             />
          </View>
-         <Text className="text-2xl font-black text-brand-dark">Bienvenido</Text>
-         <Text className="text-slate-400 text-[10px] text-center px-8">Tu salud, a tiempo. Inicia sesión.</Text>
       </View>
 
-      {/* Form Card Compact */}
-      <View className="flex-1 bg-white rounded-t-[35px] px-8 py-8 shadow-2xl shadow-slate-200 mt-4">
+      {/* Form Card Ultra-Compact */}
+      <View className="flex-1 bg-white rounded-t-[35px] px-8 pt-10 pb-8 shadow-2xl shadow-slate-200 mt-0">
+        <View className="items-center mb-4">
+            <Text className="text-2xl font-black text-brand-dark">Bienvenido</Text>
+            <Text className="text-slate-400 text-[10px] text-center px-8">Tu salud, a tiempo. Inicia sesión.</Text>
+        </View>
         <KeyboardAvoidingView 
             behavior={Platform.OS === "ios" ? "padding" : undefined} 
             style={{ flex: 1 }}
