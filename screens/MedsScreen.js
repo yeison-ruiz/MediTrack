@@ -10,17 +10,23 @@ import { useFocusEffect } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 export default function MedsScreen({ navigation }) {
-  const { medications, deleteMedication, fetchMedications } = useMedicationStore();
+  const { medications, deleteMedication, fetchMedications, getTodayDoses } = useMedicationStore();
   const { user } = useAuthStore();
   const darkMode = useSettingsStore(state => state.darkMode);
   const [stats, setStats] = useState({ taken: 0, total: 0, percent: 0 });
 
   useFocusEffect(
     useCallback(() => {
-      fetchMedications();
-      // Simulación de estadísticas para la "Adherence Card" (esto idealmente vendría del historial real)
-      setStats({ taken: 2, total: 3, percent: 66 });
-    }, [])
+      const loadProgress = async () => {
+          await fetchMedications();
+          const { agenda } = await getTodayDoses();
+          const taken = agenda.filter(d => d.status === 'taken').length;
+          const total = agenda.length;
+          const percent = total > 0 ? Math.round((taken / total) * 100) : 0;
+          setStats({ taken, total, percent });
+      };
+      loadProgress();
+    }, [fetchMedications, getTodayDoses])
   );
 
   const handleDelete = (id, name) => {

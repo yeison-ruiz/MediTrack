@@ -122,27 +122,17 @@ export default function HistoryScreen({ navigation }) {
             </ScrollView>
         </View>
 
-        {/* ADHERENCE CARD */}
-        <View className="px-6 mb-8">
-            <View className="bg-white dark:bg-slate-800 rounded-[32px] p-6 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden">
-                <View className="flex-row justify-between items-start mb-4 relative z-10">
-                    <View>
-                        <Text className="text-slate-400 dark:text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">ADHERENCIA MENSUAL</Text>
-                        <Text className="text-5xl font-bold text-slate-900 dark:text-white">94%</Text>
-                        <Text className="text-slate-400 text-xs italic mt-1">Mejor que el mes pasado</Text>
-                    </View>
-                    <View className="bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full flex-row items-center">
-                        <TrendingUp size={14} color="#16a34a" />
-                        <Text className="text-green-700 dark:text-green-400 font-bold text-xs ml-1">+2%</Text>
-                    </View>
+        {/* DAY SUMMARY (Replacing the confused 94% card) */}
+        <View className="px-6 mb-6">
+            <View className="bg-blue-600 dark:bg-blue-900 rounded-3xl p-5 shadow-lg shadow-blue-200 dark:shadow-none">
+                <View className="flex-row justify-between items-center mb-1">
+                    <Text className="text-blue-100 font-bold text-xs uppercase tracking-widest">Resumen del Día</Text>
+                    <CalendarIcon size={16} color="white" opacity={0.6} />
                 </View>
-
-                {/* Simulated Graph */}
-                <View className="absolute bottom-0 left-0 right-0 h-24 opacity-30">
-                     <View className="absolute bottom-0 w-full h-16 bg-blue-500 rounded-t-[100px] opacity-20" />
-                     <View className="absolute bottom-0 left-10 w-full h-20 bg-blue-600 rounded-t-[120px] opacity-20" />
-                     <View className="absolute bottom-0 -left-10 w-full h-12 bg-indigo-500 rounded-t-[150px] opacity-20" />
-                </View>
+                <Text className="text-white text-2xl font-bold">
+                    {timeline.filter(t => t.status === 'taken').length} de {timeline.length} tomas
+                </Text>
+                <Text className="text-blue-100 text-xs mt-1">Cumplimiento: {timeline.length > 0 ? Math.round((timeline.filter(t => t.status === 'taken').length / timeline.length) * 100) : 0}%</Text>
             </View>
         </View>
 
@@ -156,13 +146,18 @@ export default function HistoryScreen({ navigation }) {
                         : `Línea del ${selectedDate.toLocaleDateString('es-ES', { weekday: 'long' })}`
                         }
                  </Text>
-                 <Text className="text-slate-400 text-xs font-bold">{timeline.length} Medicamentos</Text>
              </View>
 
              <View className="pl-4">
-                 <View className="absolute left-[19px] top-4 bottom-10 w-[2px] bg-slate-200 dark:bg-slate-700 border-l border-r border-slate-200 dark:border-slate-700" />
+                 {/* Línea vertical solo si hay items */}
+                 {timeline.length > 0 && <View className="absolute left-[19px] top-4 bottom-10 w-[2px] bg-slate-200 dark:bg-slate-700 border-l border-r border-slate-200 dark:border-slate-700" />}
                  
-                 {timeline.map((item, index) => (
+                 {timeline.length === 0 ? (
+                     <View className="py-10 items-center justify-center opacity-40">
+                         <CalendarIcon size={48} color={darkMode ? "#94a3b8" : "#cbd5e1"} />
+                         <Text className="text-slate-500 font-bold mt-4 text-center">No hay registros para este día</Text>
+                     </View>
+                 ) : timeline.map((item, index) => (
                      <View key={index} className="flex-row mb-6 relative">
                          
                          {/* ICONO DE ESTADO */}
@@ -199,12 +194,12 @@ export default function HistoryScreen({ navigation }) {
                                  {/* BADGE */}
                                  {item.status === 'taken' && (
                                      <View className="bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
-                                         <Text className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase">TOMADA</Text>
+                                         <Text className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase">REGISTRADA</Text>
                                      </View>
                                  )}
                                  {item.status === 'missed' && (
                                      <View className="bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
-                                         <Text className="text-[10px] font-bold text-red-700 dark:text-red-400 uppercase">DUDOSA</Text>
+                                         <Text className="text-[10px] font-bold text-red-700 dark:text-red-400 uppercase">SIN REGISTRO</Text>
                                      </View>
                                  )}
                              </View>

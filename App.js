@@ -20,23 +20,31 @@ export default function App() {
     // Restaurar Sesión Supabase
     useAuthStore.getState().checkSession();
 
+    // Listener para cuando el usuario RECIBE la notificación (App abierta o en segundo plano)
+    const receivedSub = Notifications.addNotificationReceivedListener(notification => {
+        const body = notification.request.content.body;
+        // Importación dinámica para evitar ciclo
+        const { speak } = require('./services/notificationService');
+        speak(body);
+    });
+
     // Listener para cuando el usuario TOCA la notificación
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+    const responseSub = Notifications.addNotificationResponseReceivedListener(response => {
       const data = response.notification.request.content.data;
       if (data && data.screen === 'DoseConfirmation' && navigationRef.isReady()) {
-          // Navegar a la pantalla de confirmación
-          // Construimos un objeto 'medication' parcial con lo que tenemos en data
           const medicationParams = {
               name: data.medName,
               dosage: data.dosage,
               scheduledTime: data.scheduledTime,
-              // ID sería ideal pasarlo también si lo tuviéramos
           };
           navigationRef.navigate('DoseConfirmation', { medication: medicationParams });
       }
     });
 
-    return () => subscription.remove();
+    return () => {
+        receivedSub.remove();
+        responseSub.remove();
+    };
   }, []);
 
   return (

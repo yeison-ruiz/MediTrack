@@ -56,20 +56,28 @@ export default function ScheduleScreen({ navigation }) {
           const isSelected = date.toDateString() === selectedDate.toDateString();
           const isToday = date.toDateString() === new Date().toDateString();
 
+          const hasMeds = medications.some(m => {
+              const start = new Date(m.startDate);
+              start.setHours(0,0,0,0);
+              const checkDate = new Date(date);
+              checkDate.setHours(0,0,0,0);
+              return checkDate >= start && (!m.endDate || checkDate <= new Date(m.endDate));
+          });
+
           days.push(
               <TouchableOpacity 
                   key={i} 
                   onPress={() => setSelectedDate(date)}
                   className="w-[14.28%] aspect-square items-center justify-center relative"
               >
-                  <View className={`w-8 h-8 items-center justify-center rounded-full ${isSelected ? 'bg-blue-600' : (isToday ? 'bg-blue-100 dark:bg-blue-900 border border-blue-200 dark:border-blue-800' : '')}`}>
+                  <View className={`w-8 h-8 items-center justify-center rounded-full ${isSelected ? 'bg-blue-600 shadow-sm shadow-blue-400' : (isToday ? 'bg-blue-100 dark:bg-blue-900 border border-blue-200 dark:border-blue-800' : '')}`}>
                       <Text className={`font-bold ${isSelected ? 'text-white' : (isToday ? 'text-blue-600 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300')}`}>
                           {i}
                       </Text>
                   </View>
-                  {/* Dot indicator (simulado: si hay meds activos ese mes, mostramos dot gris suave para "posible") */}
-                  <View className="flex-row space-x-0.5 mt-1 h-1">
-                      {/* Aquí podría ir lógica compleja de dots, por ahora simple */}
+                  {/* Dot indicator real */}
+                  <View className="flex-row space-x-0.5 mt-0.5 h-1">
+                      {hasMeds && <View className={`w-1 h-1 rounded-full ${isSelected ? 'bg-blue-200' : 'bg-blue-500'}`} />}
                   </View>
               </TouchableOpacity>
           );

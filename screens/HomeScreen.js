@@ -3,7 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, FlatList, Dimensions, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity } from 'lucide-react-native';
+import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity, Cloud, CloudOff, Wifi } from 'lucide-react-native';
+
 import * as Speech from 'expo-speech';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMedicationStore } from '../store/useMedicationStore';
@@ -13,8 +14,10 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
     const { user } = useAuthStore();
-    const { getDosesByDate, markAsTaken, medications, fetchMedications, loading } = useMedicationStore();
+    const { getDosesByDate, markAsTaken, medications, fetchMedications, loading, lastSync } = useMedicationStore();
     const darkMode = useSettingsStore(state => state.darkMode);
+    const [isOnline, setIsOnline] = useState(true);
+    const [isInitializing, setIsInitializing] = useState(true);
 
     // Voice Helper
     const speak = (text) => {
@@ -79,11 +82,16 @@ export default function HomeScreen({ navigation }) {
         setTimeline(uiTimeline);
         setNextDose(nextRelevant || null);
 
-        // Stats solo de hoy
-        const total = uiTimeline.length;
+        // Stats de hoy:
+        const totalToday = uiTimeline.length;
         const taken = uiTimeline.filter(i => i.isTaken).length;
-        const adherence = total > 0 ? (taken / total) * 100 : 100;
-        setStats({ taken, total, adherence });
+        const missed = uiTimeline.filter(i => i.status === 'missed').length;
+        
+        // El porcentaje es simplemente PROGRESO REAL (1/2 = 50%)
+        const adherence = totalToday > 0 ? (taken / totalToday) * 100 : 0;
+        
+        setStats({ taken, total: totalToday, adherence, missed });
+        setIsInitializing(false);
     };
 
     useFocusEffect(
@@ -185,8 +193,25 @@ export default function HomeScreen({ navigation }) {
         return 'tomar tu medicamento';
     };
 
-    // Card de Estado de Ánimo (Simulado)
-    const mood = { label: 'Muy Bien', icon: '😄', color: 'bg-green-100' };
+    // Card de Estado de Ánimo Dinámica - UNIFICADA CON EL PROGRESO REAL
+    const getMoodData = (taken, total, missed) => {
+        if (total === 0) return { label: 'Sin Datos', icon: '😶', color: 'bg-slate-100', textColor: 'text-slate-700', darkColor: 'dark:bg-slate-800' };
+
+        // 1. Si hay olvidos (Dosis que ya pasaron de hora y no se tomaron)
+        if (missed > 0) {
+            return { label: 'Dosis Pendiente', icon: '⚠️', color: 'bg-red-50', textColor: 'text-red-700', darkColor: 'dark:bg-red-900/20' };
+        }
+
+        // 2. Si ya completó TODO el día
+        if (taken === total && total > 0) {
+            return { label: '¡Meta Cumplida!', icon: '🌟', color: 'bg-green-100', textColor: 'text-green-700', darkColor: 'dark:bg-green-900/30' };
+        }
+
+        // 3. Si va por buen camino (ha tomado algo o no le ha tocado ninguna aún)
+        return { label: 'Vas Bien', icon: '👍', color: 'bg-blue-50', textColor: 'text-blue-700', darkColor: 'dark:bg-blue-900/20' };
+    };
+
+    const mood = getMoodData(stats.taken, stats.total, stats.missed);
 
     const renderDoseItem = ({ item }) => {
         // Estilo 1: Tomado
@@ -256,18 +281,32 @@ export default function HomeScreen({ navigation }) {
                         )}
                     </View>
                     <View>
-                        <Text className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">BIENVENIDO</Text>
+                        <View className="flex-row items-center">
+                            <Text className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">BIENVENIDO</Text>
+                            <View className={`ml-2 px-1.5 py-0.5 rounded-full flex-row items-center ${isOnline ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-orange-50 dark:bg-orange-900/20'}`}>
+                                {isOnline ? <Cloud size={10} color="#10b981" /> : <CloudOff size={10} color="#f59e0b" />}
+                                <Text className={`text-[8px] font-bold ml-1 ${isOnline ? 'text-emerald-600' : 'text-orange-600'}`}>
+                                    {isOnline ? 'SINCRO' : 'LOCAL'}
+                                </Text>
+                            </View>
+                        </View>
                         <Text className="text-lg font-bold text-slate-800 dark:text-white">{user?.name || "Paciente"}</Text>
+                        {lastSync && (
+                            <Text className="text-[8px] text-slate-400 italic">Sinc: {new Date(lastSync).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</Text>
+                        )}
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity className="bg-white dark:bg-slate-800 p-2 rounded-full shadow-sm" onPress={() => navigation.navigate('AlarmSettings')}>
                     <Bell size={20} color={darkMode ? "#e2e8f0" : "#64748b"} />
                 </TouchableOpacity>
             </View>
-    
-            {/* HERO CARD (Timer) */}
             {/* HERO CARD (Timer / Welcome / All Done) */}
-            {medications.length === 0 ? (
+            {isInitializing ? (
+                <View className="bg-slate-200 dark:bg-slate-800 w-full h-48 rounded-3xl p-6 mb-6 items-center justify-center">
+                    <Activity size={24} color="#64748b" />
+                    <Text className="text-slate-500 mt-2 font-bold uppercase text-[10px]">Actualizando tu Agenda...</Text>
+                </View>
+            ) : medications.length === 0 ? (
                  <View className="bg-indigo-600 dark:bg-indigo-700 w-full rounded-3xl p-6 shadow-xl shadow-indigo-200 dark:shadow-none mb-6 relative overflow-hidden">
                     <View className="absolute -right-10 -top-10 bg-white opacity-10 w-40 h-40 rounded-full" />
                     <View className="absolute -left-10 -bottom-10 bg-white opacity-10 w-32 h-32 rounded-full" />
@@ -276,10 +315,10 @@ export default function HomeScreen({ navigation }) {
                         <View className="flex-row items-center mb-1">
                              <Image 
                                 source={require('../assets/logomeditrack.png')} 
-                                style={{ width: 16, height: 16, marginRight: 6 }}
+                                style={{ width: 80, height: 16, marginRight: 6 }}
                                 resizeMode="contain"
                              />
-                             <Text className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">¡BIENVENIDO A MEDITRACK!</Text>
+                             <Text className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">¡BIENVENIDO!</Text>
                         </View>
                         <Text className="text-white font-bold text-2xl leading-8">Tu salud, organizada.</Text>
                     </View>
@@ -310,14 +349,15 @@ export default function HomeScreen({ navigation }) {
                     <View className="flex-row justify-between mb-6">
                         {['HORAS', 'MIN', 'SEG'].map((label, idx) => {
                             const val = idx === 0 ? timeLeft.h : idx === 1 ? timeLeft.m : timeLeft.s;
+                            const isMissed = nextDose.status === 'missed';
                             return (
                                 <View key={label} className="items-center">
-                                    <View className={`${nextDose.status === 'missed' ? 'bg-red-400/50 border-red-300/30' : nextDose.isTomorrow ? 'bg-slate-500/50 border-white/20' : 'bg-blue-500/50 border-blue-400/30'} rounded-xl w-20 h-16 items-center justify-center mb-1 border`}>
+                                    <View className={`${isMissed ? 'bg-red-400/50 border-red-300/30' : nextDose.isTomorrow ? 'bg-slate-500/50 border-white/20' : 'bg-blue-500/50 border-blue-400/30'} rounded-xl w-20 h-16 items-center justify-center mb-1 border`}>
                                         <Text className="text-white text-2xl font-bold">
-                                            {nextDose.status === 'missed' ? '!' : val.toString().padStart(2, '0')}
+                                            {isMissed ? '!' : val.toString().padStart(2, '0')}
                                         </Text>
                                     </View>
-                                    <Text className={`${nextDose.status === 'missed' ? 'text-red-200' : 'text-blue-200'} text-[10px] font-bold`}>{label}</Text>
+                                    <Text className={`${isMissed ? 'text-red-200' : 'text-blue-200'} text-[10px] font-bold`}>{label}</Text>
                                 </View>
                             );
                         })}
@@ -380,11 +420,13 @@ export default function HomeScreen({ navigation }) {
                                 <TrendingUp size={16} color={darkMode ? "white" : "black"} opacity={0.5} />
                                 <Text className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-600/70'}`}>Estado</Text>
                             </View>
-                            <View className="flex-row items-center justify-between">
-                                <Text className="text-4xl">{mood.icon}</Text>
-                                <View className="items-end">
-                                    <Text className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`}>{mood.label}</Text>
-                                    <Text className="text-xs font-bold opacity-50 dark:text-slate-400">{Math.round(stats.adherence)}%</Text>
+                            <View className="flex-row items-center space-x-2">
+                                <Text className="text-2xl">{mood.icon}</Text>
+                                <View className="flex-1">
+                                    <Text className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`} numberOfLines={1}>{mood.label}</Text>
+                                    <View className="flex-row items-center">
+                                        <Text className="text-[10px] font-bold opacity-50 dark:text-slate-400">{Math.round(stats.adherence)}%</Text>
+                                    </View>
                                 </View>
                             </View>
                         </View>
