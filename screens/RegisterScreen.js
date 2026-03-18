@@ -54,12 +54,12 @@ export default function RegisterScreen({ navigation }) {
       {/* Background Decor */}
       <View className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-brand-blue/5 rounded-full" />
 
-      {/* Header Section Compact */}
-      <View className="px-6 pt-4 items-center">
-         <View className="bg-white p-4 rounded-full shadow-lg border-2 border-slate-50 mb-2">
+      {/* Header Section Ultra-Compact */}
+      <View className="px-6 pt-1 items-center">
+         <View className="bg-white p-5 rounded-full shadow-2xl shadow-brand-blue/20 mb-1 border-2 border-slate-50">
             <Image 
                 source={require('../assets/logomeditrack.png')} 
-                style={{ width: 65, height: 65 }}
+                style={{ width: 90, height: 90 }}
                 resizeMode="contain"
             />
          </View>
