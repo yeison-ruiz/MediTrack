@@ -212,28 +212,6 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                 </TouchableOpacity>
 
             </ScrollView>
-
-            {/* FOOTER SUPPLY */}
-            <View className="px-6 pb-6 pt-2">
-                <View className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 flex-row justify-between items-center">
-                    <View className="flex-row items-center">
-                        <Box size={24} color="#2563eb" />
-                        <View className="ml-3">
-                            <Text className="text-blue-900 dark:text-blue-200 font-bold">Inventario Restante</Text>
-                            <Text className="text-blue-600 dark:text-blue-400 text-xs">
-                                {med.stock_count ? `Disponibles: ${med.stock_count} unidades` : "Sin control de inventario"}
-                            </Text>
-                        </View>
-                    </View>
-                    <TouchableOpacity 
-                        onPress={handleEdit}
-                        className="bg-white dark:bg-slate-700 px-4 py-2 rounded-lg shadow-sm"
-                    >
-                        <Text className="text-blue-600 dark:text-blue-300 font-bold text-xs">Recargar</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
         </SafeAreaView>
     );
 }
