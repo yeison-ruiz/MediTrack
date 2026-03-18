@@ -20,3 +20,6 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: 🛠 Verify Build (Dry Run)
+        run: npx expo export --platform android --output-dir dist
