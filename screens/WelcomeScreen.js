@@ -20,7 +20,7 @@ export default function WelcomeScreen({ navigation }) {
       <View className="flex-1 justify-center items-center px-6">
         
          {/* Central Illustration Card */}
-         <View className="bg-white p-10 rounded-[40px] shadow-sm mb-10 w-64 h-64 justify-center items-center border border-slate-50 shadow-slate-200">
+         <View className="bg-white p-12 rounded-[50px] shadow-sm mb-10 w-72 h-72 justify-center items-center border border-slate-50 shadow-slate-200">
               <Image 
                  source={require('../assets/logomeditrack.png')} 
                  style={{ width: '100%', height: '100%' }}
