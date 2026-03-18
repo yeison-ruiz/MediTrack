@@ -19,19 +19,19 @@ export default function LoginScreen({ navigation }) {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="dark" />
       
-      {/* Dynamic Background Texture Layer */}
-      <View className="absolute top-[-30] right-[-40] w-[220] h-[220] bg-brand-blue/5 rounded-full" />
-      <View className="absolute top-[25%] left-[-60] w-[180] h-[180] bg-brand-green/3 rounded-full" />
-      <View className="absolute top-[60%] right-[-100] w-[300] h-[300] bg-brand-blue/3 rounded-full" />
-      <View className="absolute bottom-[5%] left-[20%] w-[150] h-[150] bg-brand-green/5 rounded-full" />
-      <View className="absolute bottom-[-100] right-[-20] w-[400] h-[400] bg-brand-blue/5 rounded-full" />
+      {/* High-Visibility Dynamic Background Texture Layer */}
+      <View className="absolute top-[-30] right-[-40] w-[280] h-[280] bg-brand-blue/15 rounded-full" />
+      <View className="absolute top-[20%] left-[-60] w-[220] h-[220] bg-brand-green/12 rounded-full" />
+      <View className="absolute top-[55%] right-[-100] w-[350] h-[350] bg-brand-blue/10 rounded-full" />
+      <View className="absolute bottom-[10%] left-[10%] w-[200] h-[200] bg-brand-green/15 rounded-full" />
+      <View className="absolute bottom-[-100] right-[-30] w-[450] h-[450] bg-brand-blue/12 rounded-full" />
 
-      {/* Floating Background Icons */}
-      <View className="absolute top-[30%] right-[10%] opacity-[0.05] rotate-12">
-          <Lock size={120} color="#1f95d5" strokeWidth={1} />
+      {/* Floating Background Icons - Visible */}
+      <View className="absolute top-[25%] right-[12%] opacity-[0.14] rotate-12">
+          <Lock size={130} color="#1f95d5" strokeWidth={1.5} />
       </View>
-      <View className="absolute bottom-[35%] left-[15%] opacity-[0.03] -rotate-45">
-          <Mail size={100} color="#10b981" strokeWidth={1} />
+      <View className="absolute bottom-[30%] left-[10%] opacity-[0.1] -rotate-45">
+          <Mail size={110} color="#10b981" strokeWidth={1.5} />
       </View>
 
       <View className="flex-1 justify-center px-10">
