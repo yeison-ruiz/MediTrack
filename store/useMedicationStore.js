@@ -52,7 +52,7 @@ export const useMedicationStore = create(
       },
 
       addMedication: async (medication) => {
-        const { name, dosage, frequency, times, startDate, notes, imageUri, patientName, patientType } = medication;
+        const { name, dosage, frequency, times, startDate, notes, imageUri, patientName, patientType, side_effects, stock_count } = medication;
         const userId = get().getUserId();
         if (!userId) return;
 
@@ -65,7 +65,9 @@ export const useMedicationStore = create(
             user_id: userId,
             startDate: startDate,
             times: times,
-            patientType: patientType || 'user'
+            patientType: patientType || 'user',
+            side_effects,
+            stock_count: stock_count || 0
         };
         
         set(state => ({ medications: [newMed, ...state.medications] }));
@@ -76,17 +78,39 @@ export const useMedicationStore = create(
             user_id: userId,
             name, dosage, frequency, times,
             start_date: startDate, notes, image_uri: imageUri,
-            patient_type: patientType || 'user', active: 1
+            patient_type: patientType || 'user', active: 1,
+            side_effects, stock_count: stock_count || 0
           }]).select();
 
           if (error) throw error;
           
-          // Reemplazar el temporal con el real de la DB
           if (data && data[0]) {
               await get().fetchMedications();
           }
         } catch (error) {
           console.warn('Sync Fallido: Medicamento guardado solo localmente.', error);
+        }
+      },
+
+      updateMedication: async (id, medication) => {
+        const { name, dosage, frequency, times, notes, type, patientName, patientType, side_effects, stock_count } = medication;
+        
+        // 1. Local Update
+        set(state => ({
+            medications: state.medications.map(m => m.id === id ? { ...m, ...medication } : m)
+        }));
+
+        // 2. Cloud Update
+        try {
+          const { error } = await supabase.from('medications').update({
+            name, dosage, frequency, times, notes, 
+            type, patient_name: patientName, patient_type: patientType,
+            side_effects, stock_count
+          }).eq('id', id);
+
+          if (error) throw error;
+        } catch (error) {
+          console.warn('Sync Fallido: Actualización solo local.');
         }
       },
 

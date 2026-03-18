@@ -23,6 +23,8 @@ export default function AddMedicationScreen({ navigation, route }) {
   const [frequency, setFrequency] = useState('Una vez al día'); 
   const [times, setTimes] = useState([new Date()]); // Array de fechas
   const [notes, setNotes] = useState('');
+  const [sideEffects, setSideEffects] = useState('');
+  const [stockCount, setStockCount] = useState('0');
 
   // Picker States
   const [date, setDate] = useState(new Date());
@@ -45,6 +47,8 @@ export default function AddMedicationScreen({ navigation, route }) {
     if (medToEdit) {
         setName(medToEdit.name);
         setNotes(medToEdit.notes || '');
+        setSideEffects(medToEdit.side_effects || '');
+        setStockCount(String(medToEdit.stock_count || 0));
         setMedType(mapTypeToSpanish(medToEdit.type));
 
         const doseMatch = medToEdit.dosage ? medToEdit.dosage.match(/^(\d+)\s*(.*)$/) : null;
@@ -160,7 +164,13 @@ export default function AddMedicationScreen({ navigation, route }) {
         const finalPatientName = isForPet ? petName : (user?.name || 'Usuario'); // Opcional: Guardar nombre del usuario
 
         if (isEditing) {
-            await updateMedication(medToEdit.id, name, fullDosage, frequency, formattedTimes, notes, medType, finalPatientName, patientType);
+            const medicationData = {
+                name, dosage: fullDosage, frequency, times: formattedTimes, 
+                notes, type: medType, patientName: finalPatientName, 
+                patientType, side_effects: sideEffects, 
+                stock_count: parseInt(stockCount) || 0
+            };
+            await updateMedication(medToEdit.id, medicationData);
             showAlert("¡Actualizado!", "El medicamento ha sido modificado exitosamente.", [{ text: "OK", onPress: () => navigation.goBack() }], "success");
         } else {
             // Crear string de fecha LOCAL YYYY-MM-DD para evitar saltos de día por Timezone
@@ -178,7 +188,9 @@ export default function AddMedicationScreen({ navigation, route }) {
                 type: medType,
                 startDate: localStartDate,
                 patientName: finalPatientName,
-                patientType
+                patientType,
+                side_effects: sideEffects,
+                stock_count: parseInt(stockCount) || 0
             });
             showAlert("¡Agregado!", "Tu nuevo medicamento ya está en la agenda.", [{ text: "Perfecto", onPress: () => navigation.goBack() }], "success");
         }
@@ -394,7 +406,7 @@ export default function AddMedicationScreen({ navigation, route }) {
         <View className="mb-24">
             <Text className="text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">INSTRUCCIONES ESPECIALES</Text>
             <TextInput 
-                className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-base text-slate-800 dark:text-white focus:border-blue-500 shadow-sm h-24"
+                className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-base text-slate-800 dark:text-white focus:border-blue-500 shadow-sm h-24 mb-6"
                 placeholder="ej. Tomar con comida, evitar alcohol"
                 placeholderTextColor={darkMode ? "#64748b" : "#94a3b8"}
                 multiline
@@ -402,6 +414,31 @@ export default function AddMedicationScreen({ navigation, route }) {
                 value={notes}
                 onChangeText={setNotes}
             />
+
+            <Text className="text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">EFECTOS SECUNDARIOS</Text>
+            <TextInput 
+                className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-base text-slate-800 dark:text-white focus:border-blue-500 shadow-sm h-24 mb-6"
+                placeholder="ej. Somnolencia, mareos"
+                placeholderTextColor={darkMode ? "#64748b" : "#94a3b8"}
+                multiline
+                textAlignVertical="top"
+                value={sideEffects}
+                onChangeText={setSideEffects}
+            />
+
+            <Text className="text-xs font-bold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">CANTIDAD EN INVENTARIO (OPCIONAL)</Text>
+            <View className="flex-row items-center bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 mb-24">
+                <Archive size={20} color={darkMode ? "#94a3b8" : "#64748b"} className="mr-3" />
+                <TextInput 
+                    className="flex-1 text-base text-slate-800 dark:text-white font-bold"
+                    placeholder="ej. 30"
+                    placeholderTextColor={darkMode ? "#64748b" : "#94a3b8"}
+                    keyboardType="numeric"
+                    value={stockCount}
+                    onChangeText={setStockCount}
+                />
+                <Text className="text-slate-400 text-xs ml-2 uppercase font-bold">Unidades</Text>
+            </View>
         </View>
 
       </ScrollView>

@@ -55,6 +55,10 @@ export const initDB = () => {
 
     try { db.execSync("ALTER TABLE users ADD COLUMN is_verified INTEGER DEFAULT 0;"); } catch (e) {}
     try { db.execSync("ALTER TABLE users ADD COLUMN verification_code TEXT;"); } catch (e) {}
+    
+    // Nuevas columnas para detalles y stock
+    try { db.execSync("ALTER TABLE medications ADD COLUMN side_effects TEXT;"); } catch (e) {}
+    try { db.execSync("ALTER TABLE medications ADD COLUMN stock_count INTEGER DEFAULT 0;"); } catch (e) {}
 
     console.log('Database initialized successfully');
   } catch (error) {

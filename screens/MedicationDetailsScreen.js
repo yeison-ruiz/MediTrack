@@ -10,23 +10,27 @@ import { useAlert } from '../components/AlertSystem';
 const { width } = Dimensions.get('window');
 
 export default function MedicationDetailsScreen({ navigation, route }) {
-    const { medication } = route.params || {};
-    const darkMode = useSettingsStore(state => state.darkMode);
-    const { deleteMedication } = useMedicationStore();
-    const { showAlert } = useAlert();
-
-    // Datos de fallback por si algo falta
-    const med = medication || {
+    const { medication: initialMedication } = route.params || {};
+    const medications = useMedicationStore(state => state.medications);
+    
+    // Obtener la versión más reciente del store para que después de editar se vea reflejado
+    const med = medications.find(m => m.id === initialMedication?.id) || initialMedication || {
         name: 'Medicamento',
         dosage: '---',
         frequency: 'Diaria',
         times: '[]',
-        notes: 'Sin notas adicionales.'
+        notes: 'Sin notas adicionales.',
+        side_effects: 'No se han registrado efectos secundarios.',
+        stock_count: 0
     };
+
+    const darkMode = useSettingsStore(state => state.darkMode);
+    const { deleteMedication } = useMedicationStore();
+    const { showAlert } = useAlert();
 
     const times = (() => {
         try {
-            return JSON.parse(med.times);
+            return typeof med.times === 'string' ? JSON.parse(med.times) : (med.times || []);
         } catch { return []; }
     })();
 
@@ -193,7 +197,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         <View className="flex-1">
                             <Text className="font-bold text-slate-700 dark:text-slate-200 mb-1">Instrucciones / Notas</Text>
                             <Text className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                                {med.notes || "Tomar con abundante agua. No masticar."}
+                                {med.notes || "Sin instrucciones adicionales."}
                             </Text>
                         </View>
                     </View>
@@ -205,7 +209,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         <View className="flex-1">
                             <Text className="font-bold text-slate-700 dark:text-slate-200 mb-1">Efectos Secundarios</Text>
                             <Text className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                                Puede causar somnolencia o mareos leves. Consultar si persisten.
+                                {med.side_effects || "No se han registrado efectos secundarios para este medicamento."}
                             </Text>
                         </View>
                     </View>
@@ -230,15 +234,19 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         <Box size={24} color="#2563eb" />
                         <View className="ml-3">
                             <Text className="text-blue-900 dark:text-blue-200 font-bold">Inventario Restante</Text>
-                            <Text className="text-blue-600 dark:text-blue-400 text-xs">Calculado: 12 tabletas</Text>
+                            <Text className="text-blue-600 dark:text-blue-400 text-xs">
+                                {med.stock_count ? `Disponibles: ${med.stock_count} unidades` : "Sin control de inventario"}
+                            </Text>
                         </View>
                     </View>
-                    <TouchableOpacity className="bg-white dark:bg-slate-700 px-4 py-2 rounded-lg shadow-sm">
+                    <TouchableOpacity 
+                        onPress={handleEdit}
+                        className="bg-white dark:bg-slate-700 px-4 py-2 rounded-lg shadow-sm"
+                    >
                         <Text className="text-blue-600 dark:text-blue-300 font-bold text-xs">Recargar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-
         </SafeAreaView>
     );
 }
