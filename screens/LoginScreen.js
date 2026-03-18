@@ -24,10 +24,10 @@ export default function LoginScreen({ navigation }) {
 
       {/* Header Section Compact */}
       <View className="px-6 pt-4 items-center">
-         <View className="bg-white p-3 rounded-full shadow-lg border-2 border-slate-50 mb-2">
+         <View className="bg-white p-4 rounded-full shadow-lg border-2 border-slate-50 mb-2">
             <Image 
                 source={require('../assets/logomeditrack.png')} 
-                style={{ width: 50, height: 50 }}
+                style={{ width: 65, height: 65 }}
                 resizeMode="contain"
             />
          </View>
