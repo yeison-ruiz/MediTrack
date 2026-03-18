@@ -18,32 +18,101 @@ export const useMedicationStore = create(
         return useAuthStore.getState().user?.id;
       },
 
-      fetchMedications: async () => {
-        const userId = get().getUserId();
-        if (!userId) return;
+      togglePauseMedication: async (medId) => {
+        const { medications } = get();
+        const med = medications.find(m => m.id === medId);
+        if (!med) return;
 
+        const newPausedStatus = med.paused ? 0 : 1;
+
+        try {
+          // 1. Cancelar/Agendar notificaciones
+          if (newPausedStatus) {
+            // Pausando: cancelar todas las notificaciones
+            await cancelAllNotificationsForMedication(med.name);
+          } else {
+            // Reanudando: volver a agendar
+            const times = typeof med.times === 'string' ? JSON.parse(med.times) : med.times;
+            for (const time of times) {
+              await scheduleMedicationNotification(med.name, time);
+            }
+          }
+
+          // 2. Actualizar localmente (Store)
+          set(state => ({
+            medications: state.medications.map(m =>
+              m.id === medId ? { ...m, paused: newPausedStatus } : m
+            )
+          }));
+
+          // 3. Actualizar SQLite
+          const db = await SQLite.openDatabaseAsync('medtime.db');
+          await db.runAsync(
+            'UPDATE medications SET paused = ? WHERE id = ?',
+            [newPausedStatus, medId]
+          );
+
+          // 4. Actualizar Supabase si está disponible
+          const userId = get().getUserId();
+          if (userId) {
+            await supabase
+              .from('medications')
+              .update({ paused: newPausedStatus })
+              .eq('id', medId);
+          }
+
+        } catch (error) {
+          console.error("Error toggling pause:", error);
+        }
+      },
+
+      fetchMedications: async () => {
         set({ loading: true, error: null });
         try {
-          // Intentar obtener de Supabase
-          const { data, error } = await supabase
-            .from('medications')
-            .select('*')
-            .eq('active', 1)
-            .eq('user_id', userId)
-            .order('id', { ascending: false });
+          const db = await SQLite.openDatabaseAsync('medtime.db');
 
-          if (error) throw error;
+          // Intentar obtener de SQLite primero
+          let meds = await db.getAllAsync('SELECT * FROM medications');
 
-          const meds = data.map(m => ({
+          // Normalizar campos que puedan venir mal de la base de datos
+          meds = meds.map(m => ({
             ...m,
+            paused: !!m.paused, // Convertir 0/1 a boolean
+            times: typeof m.times === 'string' ? JSON.parse(m.times) : m.times,
             startDate: m.start_date,
-            times: m.times || [],
             patientName: m.patient_name,
             patientType: m.patient_type || 'user'
           }));
 
-          // Actualizar estado Local y marcar último sync
           set({ medications: meds, loading: false, lastSync: new Date().toISOString() });
+
+          // Sincronizar con Supabase si está logueado
+          const userId = get().getUserId();
+          if (userId) {
+            const { data: supabaseMeds, error } = await supabase
+              .from('medications')
+              .select('*')
+              .eq('user_id', userId)
+              .eq('active', 1)
+              .order('id', { ascending: false });
+
+            if (!error && supabaseMeds) {
+              // Merge o reemplazo según tu estrategia (aquí simple reemplazo local para demo)
+              const normalizedSupabase = supabaseMeds.map(m => ({
+                 ...m,
+                 paused: !!m.paused,
+                 startDate: m.start_date,
+                 times: m.times || [],
+                 patientName: m.patient_name,
+                 patientType: m.patient_type || 'user'
+              }));
+              set({ medications: normalizedSupabase });
+
+              // Opcional: actualizar SQLite con lo de Supabase
+              // For simplicity, this example just updates the store.
+              // A full sync logic would involve comparing and updating SQLite.
+            }
+          }
         } catch (error) {
           console.log('Modo Offline: Usando caché local para medicamentos');
           // No lanzamos error para que la app lea lo que tiene en 'medications' (persistido)

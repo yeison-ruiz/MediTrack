@@ -59,6 +59,7 @@ export const initDB = () => {
     // Nuevas columnas para detalles y stock
     try { db.execSync("ALTER TABLE medications ADD COLUMN side_effects TEXT;"); } catch (e) {}
     try { db.execSync("ALTER TABLE medications ADD COLUMN stock_count INTEGER DEFAULT 0;"); } catch (e) {}
+    try { db.execSync("ALTER TABLE medications ADD COLUMN paused INTEGER DEFAULT 0;"); } catch (e) {}
 
     console.log('Database initialized successfully');
   } catch (error) {
