@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity } from 'lucide-react-native';
+import * as Speech from 'expo-speech';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -12,8 +13,17 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
     const { user } = useAuthStore();
-    const { getDosesByDate, markAsTaken, medications, fetchMedications } = useMedicationStore();
+    const { getDosesByDate, markAsTaken, medications, fetchMedications, loading } = useMedicationStore();
     const darkMode = useSettingsStore(state => state.darkMode);
+
+    // Voice Helper
+    const speak = (text) => {
+        try {
+            Speech.speak(text, { language: 'es-ES', rate: 0.9 });
+        } catch (e) {
+            console.error("Speech error", e);
+        }
+    };
 
     // Safety Fetch
     useEffect(() => {
@@ -32,26 +42,48 @@ export default function HomeScreen({ navigation }) {
     const [processingDose, setProcessingDose] = useState(null);
 
     const loadData = async () => {
-        // Cargar dosis de HOY
-        const { agenda } = await getDosesByDate(new Date());
+        // 1. Cargar dosis de HOY
+        let { agenda } = await getDosesByDate(new Date());
         
         // Mapear para UI (añadir isTaken flag basado en status)
-        const uiTimeline = agenda.map(item => ({
+        let uiTimeline = agenda.map(item => ({
             ...item,
             isTaken: item.status === 'taken'
         }));
 
-        setTimeline(uiTimeline);
+        // 2. ¿Queda algo por hacer HOY?
+        let nextRelevant = uiTimeline
+            .filter(i => !i.isTaken)
+            .sort((a, b) => {
+                if (a.status === 'missed' && b.status !== 'missed') return -1;
+                if (a.status !== 'missed' && b.status === 'missed') return 1;
+                return a.scheduledTime.localeCompare(b.scheduledTime);
+            })[0];
 
-        // Calcular Stats
+        // 3. SI NO HAY NADA HOY, buscar en MAÑANA (Lookahead)
+        if (!nextRelevant) {
+            console.log("Nada hoy, buscando mañana...");
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const { agenda: tomorrowAgenda } = await getDosesByDate(tomorrow);
+            
+            if (tomorrowAgenda.length > 0) {
+                // Tomamos la primera del día siguiente
+                const firstTomorrow = tomorrowAgenda.sort((a,b) => a.scheduledTime.localeCompare(b.scheduledTime))[0];
+                if (firstTomorrow) {
+                    nextRelevant = { ...firstTomorrow, isTomorrow: true };
+                }
+            }
+        }
+
+        setTimeline(uiTimeline);
+        setNextDose(nextRelevant || null);
+
+        // Stats solo de hoy
         const total = uiTimeline.length;
         const taken = uiTimeline.filter(i => i.isTaken).length;
         const adherence = total > 0 ? (taken / total) * 100 : 100;
         setStats({ taken, total, adherence });
-
-        // Calcular Próxima Dosis (primera pendiente)
-        const pending = uiTimeline.find(i => !i.isTaken && i.status !== 'missed');
-        setNextDose(pending || null);
     };
 
     useFocusEffect(
@@ -68,8 +100,13 @@ export default function HomeScreen({ navigation }) {
         
         const updateTimer = () => {
             const now = new Date();
-            const [h, m] = nextDose.scheduledTime.split(':');
             const target = new Date();
+            const [h, m] = nextDose.scheduledTime.split(':');
+            
+            if (nextDose.isTomorrow) {
+                target.setDate(target.getDate() + 1);
+            }
+            
             target.setHours(parseInt(h, 10), parseInt(m, 10), 0, 0);
             
             let diff = target - now;
@@ -77,9 +114,8 @@ export default function HomeScreen({ navigation }) {
             // Auto-Popup cuando llega la hora
             if (diff <= 0) {
                  diff = 0;
-                 
-                 // Solo abrir si no se ha abierto ya para estai dosis específica
-                 if (lastAutoPromptId.current !== nextDose.uniqueId && !modalVisible) {
+                 // Solo abrir si es HOY y no se ha abierto ya para esta dosis
+                 if (!nextDose.isTomorrow && lastAutoPromptId.current !== nextDose.uniqueId && !modalVisible) {
                      lastAutoPromptId.current = nextDose.uniqueId;
                      handleOpenConfirm(nextDose);
                  }
@@ -98,16 +134,45 @@ export default function HomeScreen({ navigation }) {
     }, [nextDose, modalVisible]);
 
     const handleOpenConfirm = (dose) => {
+        console.log("Opening confirmation for dose:", dose?.name, dose?.id);
+        if (!dose) return;
         setProcessingDose(dose);
         setModalVisible(true);
     };
 
+    const handleAunNo = () => {
+        console.log("User postponed dose");
+        setModalVisible(false);
+        setProcessingDose(null);
+        speak("Entendido. No olvides tomar tu dosis, te lo recordaré nuevamente en 5 minutos.");
+        lastAutoPromptId.current = null;
+    };
+
     const confirmTakeDose = async () => {
-        if (processingDose) {
-            await markAsTaken(processingDose.id, 'taken');
+        if (!processingDose) return;
+
+        try {
+            // 1. Cerrar UI inmediatamente
             setModalVisible(false);
+            const savedDoseName = processingDose.name;
+            
+            // 2. Ejecutar guardado
+            await markAsTaken(processingDose.id, 'taken');
+            
+            speak(`¡Listo! He anotado tu dosis de ${savedDoseName}.`);
+            
+            // 3. Limpiar estado y refrescar
             setProcessingDose(null);
-            loadData(); // Recargar para actualizar UI
+            
+            // Refrescar inmediatamente
+            await loadData();
+            
+            // Refrescar de nuevo en un segundo por si acaso la red tardó
+            setTimeout(loadData, 1500);
+            
+        } catch (error) {
+            console.error("Error al confirmar toma:", error);
+            setModalVisible(false);
         }
     };
 
@@ -234,12 +299,12 @@ export default function HomeScreen({ navigation }) {
                     </TouchableOpacity>
                  </View>
             ) : nextDose ? (
-                <View className="bg-blue-600 dark:bg-blue-700 w-full rounded-3xl p-6 shadow-xl shadow-blue-200 dark:shadow-none mb-6 relative overflow-hidden">
+                <View className={`${nextDose.status === 'missed' ? 'bg-red-500 shadow-red-200' : 'bg-blue-600 shadow-blue-200'} w-full rounded-3xl p-6 shadow-xl dark:shadow-none mb-6 relative overflow-hidden`}>
                     <View className="absolute -right-10 -top-10 bg-white opacity-10 w-40 h-40 rounded-full" />
                     <View className="absolute -left-10 -bottom-10 bg-white opacity-10 w-32 h-32 rounded-full" />
     
-                    <Text className="text-blue-100 text-xs font-bold uppercase tracking-widest mb-4 flex-row items-center">
-                        ⏱  PRÓXIMA DOSIS: {nextDose.name.toUpperCase()}
+                    <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-100'} text-xs font-bold uppercase tracking-widest mb-4 flex-row items-center`}>
+                        {nextDose.status === 'missed' ? '⚠️  REPORTAR TOMA: ' : nextDose.isTomorrow ? '📅  MAÑANA: ' : '⏱  PRÓXIMA DOSIS: '} {nextDose.name.toUpperCase()}
                     </Text>
     
                     <View className="flex-row justify-between mb-6">
@@ -247,35 +312,46 @@ export default function HomeScreen({ navigation }) {
                             const val = idx === 0 ? timeLeft.h : idx === 1 ? timeLeft.m : timeLeft.s;
                             return (
                                 <View key={label} className="items-center">
-                                    <View className="bg-blue-500/50 rounded-xl w-20 h-16 items-center justify-center mb-1 border border-blue-400/30">
-                                        <Text className="text-white text-2xl font-bold">{val.toString().padStart(2, '0')}</Text>
+                                    <View className={`${nextDose.status === 'missed' ? 'bg-red-400/50 border-red-300/30' : nextDose.isTomorrow ? 'bg-slate-500/50 border-white/20' : 'bg-blue-500/50 border-blue-400/30'} rounded-xl w-20 h-16 items-center justify-center mb-1 border`}>
+                                        <Text className="text-white text-2xl font-bold">
+                                            {nextDose.status === 'missed' ? '!' : val.toString().padStart(2, '0')}
+                                        </Text>
                                     </View>
-                                    <Text className="text-blue-200 text-[10px] font-bold">{label}</Text>
+                                    <Text className={`${nextDose.status === 'missed' ? 'text-red-200' : 'text-blue-200'} text-[10px] font-bold`}>{label}</Text>
                                 </View>
                             );
                         })}
                     </View>
     
-                    <View className="flex-row justify-between items-center">
-                        <View>
-                            <Text className="text-white font-bold text-lg">{nextDose.scheduledTime} • {nextDose.dosage}</Text>
-                            <Text className="text-blue-200 text-sm">{nextDose.notes || "Según receta"}</Text>
+                    <View className="flex-row justify-between items-center mt-auto">
+                        <View className="flex-1 mr-3">
+                            <Text className="text-white font-bold text-lg leading-6">{nextDose.isTomorrow ? 'Mañana ' : ''}{nextDose.scheduledTime} • {nextDose.dosage}</Text>
+                            <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-200'} text-xs mt-1 leading-4`}>
+                                {nextDose.notes || "Según receta"}
+                            </Text>
                         </View>
                         
-                        {/* Lógica de Botón Inteligente: Prevenir tomas tempranas */}
-                        {timeLeft.h === 0 && timeLeft.m === 0 && timeLeft.s === 0 ? (
+                        {/* Lógica de Botón Inteligente: Aparece si es Olvidada O si faltan menos de 30 mins */}
+                        {(nextDose.status === 'missed' || (timeLeft.h === 0 && timeLeft.m <= 30) || nextDose.isTomorrow) ? (
                             <TouchableOpacity 
-                                className="bg-white px-6 py-3 rounded-xl shadow-sm"
-                                onPress={() => handleOpenConfirm(nextDose)}
+                                className="bg-white px-5 py-3 rounded-xl shadow-lg border-2 border-white/50"
+                                onPress={() => {
+                                    console.log("Botón Registrar Toma presionado");
+                                    handleOpenConfirm(nextDose);
+                                }}
+                                activeOpacity={0.8}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                             >
-                                <Text className="text-blue-600 font-bold uppercase text-xs">Registrar Toma</Text>
+                                <Text className={`${nextDose.status === 'missed' ? 'text-red-600' : 'text-blue-600'} font-bold uppercase text-xs`}>
+                                    {nextDose.status === 'missed' ? 'Tomar Ahora' : 'Confirmar'}
+                                </Text>
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity 
-                                className="bg-blue-500/30 border border-blue-400/30 px-6 py-3 rounded-xl"
+                                className={`${nextDose.status === 'missed' ? 'bg-red-400/30 border-red-300/30' : 'bg-blue-500/30 border-blue-400/30'} border px-5 py-3 rounded-xl`}
                                 onPress={() => navigation.navigate('MedicationDetails', { medication: nextDose })}
                             >
-                                <Text className="text-blue-100 font-bold uppercase text-xs">Ver Detalles</Text>
+                                <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-100'} font-bold uppercase text-xs`}>Ver Detalles</Text>
                             </TouchableOpacity>
                         )}
                     </View>
@@ -388,10 +464,10 @@ export default function HomeScreen({ navigation }) {
                         </TouchableOpacity>
 
                         <TouchableOpacity 
-                            onPress={() => setModalVisible(false)}
+                            onPress={handleAunNo}
                             className="bg-red-50 dark:bg-red-900/20 w-full py-3 rounded-2xl"
                         >
-                             <Text className="text-red-500 font-bold text-center">NO, AÚN NO</Text>
+                             <Text className="text-red-500 font-bold text-center uppercase tracking-widest text-xs">Posponer 5 min</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

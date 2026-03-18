@@ -4,12 +4,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, MoreVertical, Pill, Calendar, Clock, Edit2, PauseCircle, Utensils, AlertTriangle, Box } from 'lucide-react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useMedicationStore } from '../store/useMedicationStore';
+import { useAlert } from '../components/AlertSystem';
 
 const { width } = Dimensions.get('window');
 
 export default function MedicationDetailsScreen({ navigation, route }) {
     const { medication } = route.params || {};
     const darkMode = useSettingsStore(state => state.darkMode);
+    const { deleteMedication } = useMedicationStore();
+    const { showAlert } = useAlert();
 
     // Datos de fallback por si algo falta
     const med = medication || {
@@ -35,6 +39,25 @@ export default function MedicationDetailsScreen({ navigation, route }) {
             { text: "Cancelar", style: "cancel" },
             { text: "Pausar", onPress: () => console.log("Pausado") }
         ]);
+    };
+
+    const handleDelete = () => {
+        showAlert(
+            "Eliminar Medicamento",
+            "¿Estás seguro? Esta acción borrará el medicamento y todos sus recordatorios de la agenda.",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { 
+                    text: "Eliminar", 
+                    style: "destructive",
+                    onPress: async () => {
+                        await deleteMedication(med.id);
+                        navigation.goBack();
+                    }
+                }
+            ],
+            "warning"
+        );
     };
 
     // Helpers de Traducción para visualización
@@ -63,7 +86,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
             <StatusBar style={darkMode ? "light" : "dark"} />
 
             {/* HEADER */}
-            <View className="flex-row justify-between items-center px-6 py-4 bg-slate-50 dark:bg-slate-900">
+            <View className="flex-row justify-between items-center px-6 pt-10 pb-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
                 <TouchableOpacity onPress={() => navigation.goBack()} className="p-2 bg-white dark:bg-slate-800 rounded-full border border-slate-100 dark:border-slate-700 shadow-sm">
                     <ChevronLeft size={24} color={darkMode ? "#e2e8f0" : "#334155"} />
                 </TouchableOpacity>
@@ -188,6 +211,15 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                     </View>
 
                 </View>
+
+                {/* DELETE BUTTON */}
+                <TouchableOpacity 
+                    onPress={handleDelete}
+                    className="mb-10 py-4 flex-row items-center justify-center"
+                >
+                    <AlertTriangle size={18} color="#ef4444" />
+                    <Text className="text-red-500 font-bold ml-2 uppercase text-xs tracking-widest">Eliminar Medicamento</Text>
+                </TouchableOpacity>
 
             </ScrollView>
 

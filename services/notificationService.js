@@ -60,65 +60,104 @@ export const scheduleTestNotification = async () => {
 };
 
 export const scheduleMedicationReminder = async (medName, dosage, hour, minute) => {
-    // Calculamos el tiempo para la simulación
-    const now = new Date();
-    const target = new Date();
-    target.setHours(hour, minute, 0, 0);
+    const reminders = [];
     
-    // Si la hora ya pasó, es para mañana
-    if (target <= now) {
-        // PERO: Si la diferencia es menor a 1 minuto, asumimos que es una prueba inmediata del usuario
-        // y la disparamos en 5 segundos.
-        const diff = now.getTime() - target.getTime();
-        if (diff < 60000) {
-             target.setTime(now.getTime() + 5000); // 5 seg futuro
-        } else {
-             target.setDate(target.getDate() + 1);
+    // Programar la Alarma Principal y 3 Re-recordatorios (Total 4 avisos)
+    // t=0, t=5, t=10, t=15
+    for (let i = 0; i <= 3; i++) {
+        const offsetMinutes = i * 5;
+        let finalMinute = minute + offsetMinutes;
+        let finalHour = hour;
+
+        // Manejar desbordamiento de minutos a horas
+        while (finalMinute >= 60) {
+            finalMinute -= 60;
+            finalHour = (finalHour + 1) % 24;
+        }
+
+        const isMain = i === 0;
+        const title = isMain ? "🔔 Hora de tu medicina" : `⚠️ Recordatorio (${i}/3)`;
+        const body = isMain 
+            ? `Es momento de tomar ${medName} (${dosage})`
+            : `Sigues sin registrar tu dosis de ${medName}. ¡No la olvides!`;
+
+        // Simulamos la alarma principal en Expo Go para feedback inmediato
+        if (isMain) {
+            const now = new Date();
+            const target = new Date();
+            target.setHours(hour, minute, 0, 0);
+            if (target <= now) {
+                const diff = now.getTime() - target.getTime();
+                if (diff < 60000) target.setTime(now.getTime() + 5000);
+                else target.setDate(target.getDate() + 1);
+            }
+            const delay = target.getTime() - now.getTime();
+            setTimeout(() => {
+                DeviceEventEmitter.emit('MOCK_NOTIFICATION', {
+                    title, body,
+                    data: { screen: 'DoseConfirmation', medName, dosage, scheduledTime: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}` }
+                });
+                speak(body);
+            }, delay);
+        }
+
+        // Programación Nativa (APK)
+        try {
+            const id = await Notifications.scheduleNotificationAsync({
+                content: {
+                    title,
+                    body,
+                    sound: true,
+                    priority: Notifications.AndroidNotificationPriority.MAX,
+                    data: { 
+                        screen: 'DoseConfirmation', 
+                        medName, 
+                        dosage, 
+                        scheduledTime: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`,
+                        isNag: !isMain,
+                        nagIndex: i
+                    }
+                },
+                trigger: {
+                    hour: finalHour,
+                    minute: finalMinute,
+                    repeats: true,
+                },
+            });
+            reminders.push(id);
+        } catch (e) {
+            console.log("Error en recordatorio nativo:", e.message);
         }
     }
 
-    const delay = target.getTime() - now.getTime();
-    console.log(`⏰ Alarma agendada para dentro de ${delay}ms`);
+    return reminders.join(','); 
+};
 
-    // Usamos setTimeout para simular la alarma si la app está abierta (Dev Mode)
-    setTimeout(() => {
-        DeviceEventEmitter.emit('MOCK_NOTIFICATION', {
-            title: "Hora de tu medicina",
-            body: `Es momento de tomar ${medName}`,
-            data: { screen: 'DoseConfirmation', medName, dosage, scheduledTime: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}` }
-        });
-        speak(`Es hora de tomar ${medName}`);
-    }, delay);
-
-    // -------------------------------------------------------------
-    // CÓDIGO DE PRODUCCIÓN (Alarma Real del Sistema)
-    // Esto fallará silenciosamente en Expo Go, pero FUNCIONARÁ en el APK real.
-    // -------------------------------------------------------------
+export const cancelAllNotificationsForMedication = async (medName) => {
     try {
-        const trigger = {
-            hour: hour,
-            minute: minute,
-            repeats: true, // Repetir diariamente
-        };
-
-        const id = await Notifications.scheduleNotificationAsync({
-            content: {
-                title: "Hora de tu medicina",
-                body: `Es momento de tu dosis de ${medName} (${dosage})`,
-                sound: true,
-                priority: Notifications.AndroidNotificationPriority.MAX,
-                data: { screen: 'DoseConfirmation', medName, dosage, scheduledTime: `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}` }
-            },
-            trigger,
-        });
-        console.log(`[PROD] Alarma nativa agendada con éxito (ID: ${id})`);
-        return id;
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const notif of scheduled) {
+            if (notif.content.data?.medName === medName) {
+                await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+            }
+        }
     } catch (e) {
-        console.log("Aviso: La alarma nativa no se pudo agendar (Normal si estás en Expo Go):", e.message);
-        return "simulated-id-" + Date.now();
+        console.error("Error cancelando:", e);
     }
 };
 
 export const cancelScheduledNotification = async (id) => {
-  // No-op en simulación
+    if (!id) return;
+    try {
+        if (typeof id === 'string' && id.includes(',')) {
+            const ids = id.split(',');
+            for (const subId of ids) {
+                await Notifications.cancelScheduledNotificationAsync(subId);
+            }
+        } else {
+            await Notifications.cancelScheduledNotificationAsync(id);
+        }
+    } catch (e) {
+        console.log("Error al cancelar individual:", e.message);
+    }
 };

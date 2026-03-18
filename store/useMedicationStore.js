@@ -169,31 +169,39 @@ export const useMedicationStore = create((set, get) => ({
         // Sería mejor exponer medication_id. Por ahora usamos medName.
         
         const medHistory = historyResult
-            .filter(h => h.medName === med.name)
+            .filter(h => h.medication_id === med.id)
             .sort((a,b) => new Date(a.taken_at) - new Date(b.taken_at));
         
+        // Lógica de emparejamiento inteligente de historial
+        // Ordenamos las tomas reales por hora para compararlas con el horario programado
+        const sortedHistory = [...medHistory].sort((a, b) => new Date(a.taken_at) - new Date(b.taken_at));
+        
         times.forEach((time, index) => {
-            // Lógica de emparejamiento: secuencial.
-            const matchedLog = medHistory[index]; 
+            // Buscamos si hay un registro de toma que "corresponda" a este horario
+            // Una forma simple pero robusta: si hay N registros, los N primeros horarios se marcan como tomados
+            const matchedLog = sortedHistory[index]; 
             let status = 'pending';
             let logTime = null;
 
             if (matchedLog) {
                 status = 'taken';
                 try {
-                     logTime = new Date(matchedLog.taken_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                     logTime = new Date(matchedLog.taken_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 } catch(e) {}
             } else {
                 if (isToday) {
                     const [h, m] = time.split(':');
                     const doseTime = new Date();
-                    doseTime.setHours(parseInt(h), parseInt(m), 0, 0);
+                    doseTime.setHours(parseInt(h, 10), parseInt(m, 10), 0, 0);
                     
-                    if (doseTime < now) status = 'missed';
+                    if (doseTime < now) {
+                        status = 'missed';
+                    } else {
+                        status = 'pending';
+                    }
                 } else if (isPast) {
                     status = 'missed';
                 } else {
-                    // FUTURO (dateStr > nowStr)
                     status = 'pending';
                 }
             }
@@ -209,32 +217,8 @@ export const useMedicationStore = create((set, get) => ({
             });
         });
 
-    // 3. Incorporar Historial Huérfano (Medicamentos inactivos o dosis extra)
-    // Los items de historyResult que NO fueron emparejados en el bucle anterior
-    const usedHistoryIds = new Set(agenda.map(a => a.historyId).filter(id => id));
-    
-    const orphans = historyResult.filter(h => !usedHistoryIds.has(h.id));
-    
-    orphans.forEach(h => {
-        const d = new Date(h.taken_at);
-        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        
-        agenda.push({
-            id: 'archived_' + h.id, // ID artificial
-            name: h.medName || 'Medicamento Archivado',
-            dosage: h.dosage || '',
-            frequency: 'Historial',
-            times: [],
-            scheduledTime: timeStr,
-            uniqueId: `hist_${h.id}`, 
-            status: h.status || 'taken',
-            logTime: timeStr,
-            isArchived: true, // Flag visual
-            // Datos mínimos para que no crashee UI
-            type: 'Tableta', 
-            notes: 'Este medicamento fue eliminado o archivado.'
-        });
-    });
+    // Se ha eliminado la lógica de "Incorporar Historial Huérfano" para 
+    // que los medicamentos eliminados no aparezcan en la agenda diaria.
 
     // Ordenar agenda por hora
     agenda.sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime));
@@ -248,6 +232,9 @@ export const useMedicationStore = create((set, get) => ({
 
   deleteMedication: async (id) => {
     try {
+      const state = get();
+      const med = state.medications.find(m => m.id === id);
+      
       const { error } = await supabase
         .from('medications')
         .update({ active: 0 })
@@ -255,6 +242,12 @@ export const useMedicationStore = create((set, get) => ({
 
       if (error) throw error;
       
+      // Cancelar todas las notificaciones agendadas para este medicamento
+      if (med) {
+          const { cancelAllNotificationsForMedication } = require('../services/notificationService');
+          await cancelAllNotificationsForMedication(med.name);
+      }
+
       set(state => ({
         medications: state.medications.filter(m => m.id !== id)
       }));
@@ -285,18 +278,23 @@ export const useMedicationStore = create((set, get) => ({
   },
 
   // Historial
-  // Historial
   markAsTaken: async (medicationId, status = 'taken') => {
+      set({ loading: true });
       try {
-          // Check if history table exists in Supabase? Yes, we will create it.
           const { error } = await supabase.from('history').insert([{
               medication_id: medicationId,
               taken_at: new Date().toISOString(),
               status
           }]);
-          if (error) console.error(error);
+          if (error) {
+              console.error(error);
+              set({ error: error.message, loading: false });
+          } else {
+              set({ loading: false });
+          }
       } catch (error) {
           console.error('Error marking as taken:', error);
+          set({ error: error.message, loading: false });
       }
   },
 
@@ -315,7 +313,7 @@ export const useMedicationStore = create((set, get) => ({
          const { data, error } = await supabase
             .from('history')
             .select(`
-                id, status, taken_at,
+                id, status, taken_at, medication_id,
                 medications (name, dosage)
             `)
             .gte('taken_at', startISO)
@@ -328,6 +326,7 @@ export const useMedicationStore = create((set, get) => ({
              id: h.id,
              status: h.status,
              taken_at: h.taken_at,
+             medication_id: h.medication_id,
              medName: h.medications?.name,
              dosage: h.medications?.dosage
          }));

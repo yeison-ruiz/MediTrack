@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { useAlert } from '../components/AlertSystem';
-import { ChevronLeft, Save, Clock, X, Plus, Pill, Droplet, Syringe, Archive, RotateCcw, Calendar } from 'lucide-react-native';
+import { ChevronLeft, Save, Clock, X, Plus, Pill, Droplet, Syringe, Archive, RotateCcw, Calendar, User, Dog } from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { StatusBar } from 'expo-status-bar';
 import { speak, scheduleMedicationReminder, cancelScheduledNotification } from '../services/notificationService';
@@ -203,19 +203,25 @@ export default function AddMedicationScreen({ navigation, route }) {
     >
       <StatusBar style={darkMode ? "light" : "dark"} />
       
-      {/* HEADER */}
-      <View className="flex-row justify-between items-center px-6 py-4 border-b border-slate-50 dark:border-slate-800">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text className="text-slate-500 dark:text-slate-400 font-bold text-base">Cancelar</Text>
-        </TouchableOpacity>
-        
-        <Text className="text-lg font-bold text-slate-900 dark:text-white absolute left-0 right-0 text-center pointer-events-none">
-            {isEditing ? 'Editar Medicamento' : 'Nuevo Medicamento'}
-        </Text>
-        
-        <TouchableOpacity onPress={handleSave} className="bg-blue-600 px-4 py-2 rounded-full">
-            <Text className="text-white font-bold text-sm">Guardar</Text>
-        </TouchableOpacity>
+      {/* HEADER: Botones superiores y Título en fila aparte */}
+      <View className="px-6 pt-12 pb-6 border-b border-slate-50 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <View className="flex-row justify-between items-center mb-6">
+              <TouchableOpacity onPress={() => navigation.goBack()} className="bg-slate-100 dark:bg-slate-800 p-2.5 rounded-xl">
+                  <X size={20} color={darkMode ? "#94a3b8" : "#64748b"} />
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                  onPress={handleSave} 
+                  className="bg-blue-600 px-6 py-2.5 rounded-xl shadow-lg shadow-blue-200"
+              >
+                  <Text className="text-white font-bold text-sm">Guardar</Text>
+              </TouchableOpacity>
+          </View>
+          
+          <Text className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {isEditing ? 'Editar' : 'Nuevo'}
+          </Text>
+          <Text className="text-slate-500 dark:text-slate-400 font-medium text-lg -mt-1.5">Medicamento</Text>
       </View>
 
       <ScrollView className="flex-1 px-6 pt-6 bg-[#FAFAFA] dark:bg-slate-950" showsVerticalScrollIndicator={false}>
@@ -226,15 +232,17 @@ export default function AddMedicationScreen({ navigation, route }) {
             <View className="flex-row space-x-3 mb-3">
                 <TouchableOpacity 
                     onPress={() => setIsForPet(false)}
-                    className={`flex-1 py-3 rounded-xl border flex-row items-center justify-center ${!isForPet ? 'bg-blue-600 border-blue-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'}`}
+                    className={`flex-1 py-4 rounded-2xl border flex-row items-center justify-center space-x-2 ${!isForPet ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-200' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'}`}
                 >
-                    <Text className={`font-bold ${!isForPet ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>👤 Para Mí</Text>
+                    <User size={20} color={!isForPet ? 'white' : (darkMode ? '#94a3b8' : '#64748b')} />
+                    <Text className={`font-bold ${!isForPet ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>Para Mí</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     onPress={() => setIsForPet(true)}
-                    className={`flex-1 py-3 rounded-xl border flex-row items-center justify-center ${isForPet ? 'bg-orange-500 border-orange-500' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'}`}
+                    className={`flex-1 py-4 rounded-2xl border flex-row items-center justify-center space-x-2 ${isForPet ? 'bg-orange-500 border-orange-500 shadow-lg shadow-orange-200' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'}`}
                 >
-                    <Text className={`font-bold ${isForPet ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>🐾 Mascota</Text>
+                    <Dog size={20} color={isForPet ? 'white' : (darkMode ? '#94a3b8' : '#64748b')} />
+                    <Text className={`font-bold ${isForPet ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>Mascota</Text>
                 </TouchableOpacity>
             </View>
 

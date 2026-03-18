@@ -24,7 +24,7 @@ export default function DoseConfirmationScreen({ navigation, route }) {
 
   const handleTake = async () => {
       await markAsTaken(medication.id, 'taken');
-      speak(`Bien hecho. Dosis de ${medication.name} registrada.`);
+      speak(`Excelente. Dosis de ${medication.name} registrada. He detenido los recordatorios persistentes para esta toma.`);
       navigation.goBack();
   };
 

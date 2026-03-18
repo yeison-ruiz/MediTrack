@@ -1,9 +1,6 @@
 name: Deploy
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_dispatch: # Ahora solo se activará cuando tú presiones el botón manualmente en GitHub
 
 jobs:
   build:
