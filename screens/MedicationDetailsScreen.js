@@ -19,8 +19,8 @@ export default function MedicationDetailsScreen({ navigation, route }) {
         dosage: '---',
         frequency: 'Diaria',
         times: '[]',
-        notes: 'Sin notas adicionales.',
-        side_effects: 'No se han registrado efectos secundarios.',
+        notes: '',
+        side_effects: '',
         stock_count: 0
     };
 
@@ -103,7 +103,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
                 
                 {/* 1. HERO CARD */}
-                <View className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 mb-6 items-center overflow-hidden">
+                <View className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 mb-6 mt-4 items-center overflow-hidden">
                     <View className="w-full h-40 bg-blue-50 dark:bg-blue-900/40 rounded-2xl mb-4 items-center justify-center relative overflow-hidden">
                         {/* Abstract Decorative Circles */}
                         <View className="absolute top-0 left-0 w-20 h-20 bg-blue-100 dark:bg-blue-800/50 rounded-full -translate-x-10 -translate-y-10" />
@@ -113,7 +113,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         {(med.type === 'Syrup' || med.type === 'Jarabe') ? (
                             <Utensils size={80} color="#3b82f6" /> 
                         ) : (med.type === 'Injection' || med.type === 'Inyección') ? (
-                            <Box size={80} color="#3b82f6" /> // Placeholder for Syringe
+                            <Box size={80} color="#3b82f6" /> 
                         ) : (
                             <Pill size={80} color="#3b82f6" />
                         )}
@@ -169,7 +169,6 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         </View>
                     </View>
 
-
                     {/* ACTIONS ROW */}
                     <View className="flex-row space-x-3 mb-6">
                         <TouchableOpacity 
@@ -202,17 +201,19 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                         </View>
                     </View>
 
-                    <View className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 flex-row items-start">
-                        <View className="bg-red-50 dark:bg-red-900/30 p-2 rounded-lg mr-3">
-                            <AlertTriangle size={20} color="#ef4444" />
+                    {med.side_effects ? (
+                        <View className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 flex-row items-start">
+                            <View className="bg-red-50 dark:bg-red-900/30 p-2 rounded-lg mr-3">
+                                <AlertTriangle size={20} color="#ef4444" />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="font-bold text-slate-700 dark:text-slate-200 mb-1">Efectos Secundarios</Text>
+                                <Text className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                    {med.side_effects}
+                                </Text>
+                            </View>
                         </View>
-                        <View className="flex-1">
-                            <Text className="font-bold text-slate-700 dark:text-slate-200 mb-1">Efectos Secundarios</Text>
-                            <Text className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                                {med.side_effects || "No se han registrado efectos secundarios para este medicamento."}
-                            </Text>
-                        </View>
-                    </View>
+                    ) : null}
 
                 </View>
 
@@ -247,6 +248,7 @@ export default function MedicationDetailsScreen({ navigation, route }) {
                     </TouchableOpacity>
                 </View>
             </View>
+
         </SafeAreaView>
     );
 }
