@@ -106,8 +106,10 @@ export const useMedicationStore = create(
 
         // Limpiar notificaciones
         const { cancelAllNotificationsForMedication } = require('../services/notificationService');
-        // Buscamos el nombre antes de borrar o pasarlo por params
-        cancelAllNotificationsForMedication("Med"); // Simplified
+        const medToDelete = get().medications.find(m => m.id === id);
+        if (medToDelete) {
+            cancelAllNotificationsForMedication(medToDelete.name);
+        }
       },
 
       markAsTaken: async (medicationId, status = 'taken') => {
