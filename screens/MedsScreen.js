@@ -10,7 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 export default function MedsScreen({ navigation }) {
-  const { medications, deleteMedication, fetchMedications, getTodayDoses } = useMedicationStore();
+  const { medications, deleteMedication, fetchMedications, getDosesByDate } = useMedicationStore();
   const { user } = useAuthStore();
   const darkMode = useSettingsStore(state => state.darkMode);
   const [stats, setStats] = useState({ taken: 0, total: 0, percent: 0 });
@@ -19,14 +19,14 @@ export default function MedsScreen({ navigation }) {
     useCallback(() => {
       const loadProgress = async () => {
           await fetchMedications();
-          const { agenda } = await getTodayDoses();
+          const { agenda } = await getDosesByDate(new Date());
           const taken = agenda.filter(d => d.status === 'taken').length;
           const total = agenda.length;
           const percent = total > 0 ? Math.round((taken / total) * 100) : 0;
           setStats({ taken, total, percent });
       };
       loadProgress();
-    }, [fetchMedications, getTodayDoses])
+    }, [fetchMedications, getDosesByDate])
   );
 
   const handleDelete = (id, name) => {
@@ -162,8 +162,10 @@ export default function MedsScreen({ navigation }) {
                         <View className="h-2 bg-blue-200 dark:bg-blue-800 rounded-full mb-3 overflow-hidden">
                             <View style={{ width: `${stats.percent}%` }} className="h-full bg-blue-600 dark:bg-blue-500 rounded-full" />
                         </View>
-                        <Text className="text-slate-500 dark:text-slate-400 text-xs">
-                            {stats.taken} de {stats.total} dosis tomadas hoy. ¡Sigue así!
+                        <Text className="text-slate-500 dark:text-slate-400 text-xs text-center font-bold">
+                            {stats.total > 0 
+                                ? `${stats.taken} de ${stats.total} dosis tomadas hoy. ${stats.percent === 100 ? '¡Meta Cumplida!' : '¡Sigue así!'}`
+                                : 'No hay dosis programadas para hoy.'}
                         </Text>
                     </View>
                 )

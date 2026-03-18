@@ -18,6 +18,7 @@ export default function HomeScreen({ navigation }) {
     const darkMode = useSettingsStore(state => state.darkMode);
     const [isOnline, setIsOnline] = useState(true);
     const [isInitializing, setIsInitializing] = useState(true);
+    const [dismissedDoses, setDismissedDoses] = useState([]); // Track IDs dismissed during this session
 
     // Voice Helper
     const speak = (text) => {
@@ -25,6 +26,20 @@ export default function HomeScreen({ navigation }) {
             Speech.speak(text, { language: 'es-ES', rate: 0.9 });
         } catch (e) {
             console.error("Speech error", e);
+        }
+    };
+
+    // Time Formatter
+    const formatToAmPm = (timeStr) => {
+        if (!timeStr) return '';
+        try {
+            const [hours, minutes] = timeStr.split(':');
+            let h = parseInt(hours, 10);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${minutes} ${ampm}`;
+        } catch (e) {
+            return timeStr;
         }
     };
 
@@ -123,7 +138,15 @@ export default function HomeScreen({ navigation }) {
             if (diff <= 0) {
                  diff = 0;
                  // Solo abrir si es HOY y no se ha abierto ya para esta dosis
-                 if (!nextDose.isTomorrow && lastAutoPromptId.current !== nextDose.uniqueId && !modalVisible) {
+                 // Y solo abrir si el retraso es menor a 30 minutos (para no molestar si ya es muy tarde)
+                 const THIRTY_MINUTES_IN_MS = 30 * 60 * 1000;
+                 const IS_VERY_LATE = Math.abs(diff) > THIRTY_MINUTES_IN_MS;
+
+                 if (!nextDose.isTomorrow && 
+                     lastAutoPromptId.current !== nextDose.uniqueId && 
+                     !modalVisible && 
+                     !dismissedDoses.includes(nextDose.uniqueId) &&
+                     !IS_VERY_LATE) {
                      lastAutoPromptId.current = nextDose.uniqueId;
                      handleOpenConfirm(nextDose);
                  }
@@ -150,9 +173,12 @@ export default function HomeScreen({ navigation }) {
 
     const handleAunNo = () => {
         console.log("User postponed dose");
+        if (processingDose) {
+            setDismissedDoses(prev => [...prev, processingDose.uniqueId]);
+        }
         setModalVisible(false);
         setProcessingDose(null);
-        speak("Entendido. No olvides tomar tu dosis, te lo recordaré nuevamente en 5 minutos.");
+        speak("Entendido. No olvides tomar tu dosis, te lo recordaré nuevamente en un momento.");
         lastAutoPromptId.current = null;
     };
 
@@ -197,17 +223,28 @@ export default function HomeScreen({ navigation }) {
     const getMoodData = (taken, total, missed) => {
         if (total === 0) return { label: 'Sin Datos', icon: '😶', color: 'bg-slate-100', textColor: 'text-slate-700', darkColor: 'dark:bg-slate-800' };
 
-        // 1. Si hay olvidos (Dosis que ya pasaron de hora y no se tomaron)
+        // 1. Si hay olvidos (Prioridad máxima)
         if (missed > 0) {
-            return { label: 'Dosis Pendiente', icon: '⚠️', color: 'bg-red-50', textColor: 'text-red-700', darkColor: 'dark:bg-red-900/20' };
+            return { label: 'Dosis Perdida', icon: '⚠️', color: 'bg-red-50', textColor: 'text-red-700', darkColor: 'dark:bg-red-900/20' };
         }
 
         // 2. Si ya completó TODO el día
         if (taken === total && total > 0) {
-            return { label: '¡Meta Cumplida!', icon: '🌟', color: 'bg-green-100', textColor: 'text-green-700', darkColor: 'dark:bg-green-900/30' };
+            return { 
+                label: '¡Meta Cumplida!', 
+                icon: '🌟', 
+                color: 'bg-emerald-100', 
+                textColor: 'text-emerald-900', 
+                darkColor: 'dark:bg-emerald-900/40' 
+            };
         }
 
-        // 3. Si va por buen camino (ha tomado algo o no le ha tocado ninguna aún)
+        // 3. Fallback para cuando no ha empezado el día (0%)
+        if (taken === 0) {
+            return { label: 'Pendiente', icon: '⏰', color: 'bg-amber-50', textColor: 'text-amber-700', darkColor: 'dark:bg-amber-900/20' };
+        }
+
+        // 4. Si va por buen camino (ha tomado algo)
         return { label: 'Vas Bien', icon: '👍', color: 'bg-blue-50', textColor: 'text-blue-700', darkColor: 'dark:bg-blue-900/20' };
     };
 
@@ -222,7 +259,7 @@ export default function HomeScreen({ navigation }) {
                         <Check size={20} color={darkMode ? "#94a3b8" : "#64748b"} />
                     </View>
                     <View className="flex-1">
-                        <Text className="text-xs text-slate-400 font-bold uppercase tracking-wider">TOMADA • {item.scheduledTime}</Text>
+                        <Text numberOfLines={1} className="text-xs text-slate-400 font-bold uppercase tracking-wider">TOMADA • {formatToAmPm(item.scheduledTime)}</Text>
                         <Text className="text-lg font-bold text-slate-700 dark:text-slate-300 line-through">{item.name}</Text>
                         <Text className="text-slate-400 text-sm">{item.dosage}</Text>
                     </View>
@@ -242,13 +279,13 @@ export default function HomeScreen({ navigation }) {
                            <Pill size={20} color={darkMode ? "#cbd5e1" : "#94a3b8"} />
                        )}
                    </View>
-                   <View className="flex-1">
+                    <View className="flex-1">
                        <View className="flex-row items-center mb-0.5">
-                           <Text className={`text-xs font-bold uppercase tracking-wider ${isMissed ? 'text-red-400' : 'text-slate-400'}`}>
-                               {isMissed ? 'OLVIDADA • ' : 'PENDIENTE • '} {item.scheduledTime}
+                           <Text numberOfLines={1} className={`text-xs font-bold uppercase tracking-wider flex-shrink-0 ${isMissed ? 'text-red-400' : 'text-slate-400'}`}>
+                                {isMissed ? 'OLVIDADA • ' : 'PENDIENTE • '}{formatToAmPm(item.scheduledTime)}
                            </Text>
                            {item.patientType === 'pet' && (
-                                <View className="bg-orange-100 dark:bg-orange-900/40 px-1.5 py-0.5 rounded ml-2 flex-row items-center">
+                                <View className="bg-orange-100 dark:bg-orange-900/40 px-1.5 py-0.5 rounded ml-2 flex-row items-center flex-shrink-1">
                                     <Text className="text-[10px] mr-1">🐾</Text>
                                     <Text className="text-[10px] font-bold text-orange-700 dark:text-orange-400 uppercase">{item.patientName}</Text>
                                 </View>
@@ -343,7 +380,7 @@ export default function HomeScreen({ navigation }) {
                     <View className="absolute -left-10 -bottom-10 bg-white opacity-10 w-32 h-32 rounded-full" />
     
                     <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-100'} text-xs font-bold uppercase tracking-widest mb-4 flex-row items-center`}>
-                        {nextDose.status === 'missed' ? '⚠️  REPORTAR TOMA: ' : nextDose.isTomorrow ? '📅  MAÑANA: ' : '⏱  PRÓXIMA DOSIS: '} {nextDose.name.toUpperCase()}
+                        {nextDose.status === 'missed' ? '⚠️  REPORTAR TOMA: ' : '⏱  PRÓXIMA DOSIS: '} {nextDose.name.toUpperCase()}
                     </Text>
     
                     <View className="flex-row justify-between mb-6">
@@ -365,7 +402,7 @@ export default function HomeScreen({ navigation }) {
     
                     <View className="flex-row justify-between items-center mt-auto">
                         <View className="flex-1 mr-3">
-                            <Text className="text-white font-bold text-lg leading-6">{nextDose.isTomorrow ? 'Mañana ' : ''}{nextDose.scheduledTime} • {nextDose.dosage}</Text>
+                            <Text className="text-white font-bold text-lg leading-6">Hora: {formatToAmPm(nextDose.scheduledTime)} • {nextDose.dosage}</Text>
                             <Text className={`${nextDose.status === 'missed' ? 'text-red-100' : 'text-blue-200'} text-xs mt-1 leading-4`}>
                                 {nextDose.notes || "Según receta"}
                             </Text>
@@ -414,31 +451,37 @@ export default function HomeScreen({ navigation }) {
                         </View>
                     </TouchableOpacity>
             
-                    <View className="flex-row space-x-4 mb-6">
-                        <View className={`flex-1 p-4 rounded-2xl border border-slate-100 dark:border-none shadow-sm ${mood.color.split(' ')[0]} dark:bg-slate-800`}>
-                            <View className="flex-row items-center space-x-2 mb-2">
-                                <TrendingUp size={16} color={darkMode ? "white" : "black"} opacity={0.5} />
-                                <Text className={`text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-600/70'}`}>Estado</Text>
+                    <View className="flex-row space-x-2 mb-6 px-1">
+                        <View className={`flex-1 p-4 rounded-3xl border border-slate-100 dark:border-none shadow-sm ${mood.color.split(' ')[0]} dark:bg-slate-800 justify-center`}>
+                            <View className="flex-row items-center space-x-1.5 mb-2">
+                                <TrendingUp size={14} color={darkMode ? "white" : "#64748b"} opacity={0.6} />
+                                <Text className={`text-[10px] font-bold ${darkMode ? 'text-slate-300' : 'text-slate-500'} uppercase tracking-tight`}>Estado</Text>
                             </View>
                             <View className="flex-row items-center space-x-2">
                                 <Text className="text-2xl">{mood.icon}</Text>
                                 <View className="flex-1">
-                                    <Text className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`} numberOfLines={1}>{mood.label}</Text>
+                                    <Text 
+                                        numberOfLines={1} 
+                                        adjustsFontSizeToFit
+                                        className={`text-[13px] font-bold leading-tight ${darkMode ? 'text-white' : 'text-slate-800'}`}
+                                    >
+                                        {mood.label}
+                                    </Text>
                                     <View className="flex-row items-center">
-                                        <Text className="text-[10px] font-bold opacity-50 dark:text-slate-400">{Math.round(stats.adherence || 0)}%</Text>
+                                        <Text className="text-[10px] font-bold opacity-50 dark:text-slate-400">{Math.round(stats.adherence || 0)}% Precisión</Text>
                                     </View>
                                 </View>
                             </View>
                         </View>
             
-                        <View className="flex-1 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                                <View className="flex-row items-center space-x-2 mb-2">
-                                    <Pill size={16} color="#3b82f6" />
-                                    <Text className="text-slate-500 dark:text-slate-400 text-xs font-bold">Progreso Diario</Text>
+                        <View className="flex-1 bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm justify-center">
+                                <View className="flex-row items-center space-x-1.5 mb-2">
+                                    <Pill size={14} color="#3b82f6" />
+                                    <Text className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-tight">Progreso</Text>
                                 </View>
-                            <View className="flex-row items-baseline space-x-2 gap-2">
-                                <Text className="text-2xl font-bold text-slate-800 dark:text-white">{stats.taken}/{stats.total}</Text>
-                                <Text className="text-slate-400 text-xs font-bold">{Math.round(stats.adherence || 0)}%</Text>
+                            <View className="flex-row items-baseline space-x-1">
+                                <Text className="text-2xl font-black text-slate-800 dark:text-white">{stats.taken}/{stats.total}</Text>
+                                <Text className="text-slate-400 dark:text-slate-500 text-[10px] font-bold">{Math.round(stats.adherence || 0)}%</Text>
                             </View>
                         </View>
                     </View>
@@ -509,7 +552,7 @@ export default function HomeScreen({ navigation }) {
                             onPress={handleAunNo}
                             className="bg-red-50 dark:bg-red-900/20 w-full py-3 rounded-2xl"
                         >
-                             <Text className="text-red-500 font-bold text-center uppercase tracking-widest text-xs">Posponer 5 min</Text>
+                             <Text className="text-red-500 font-bold text-center uppercase tracking-widest text-xs">Cerrar / Ver después</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

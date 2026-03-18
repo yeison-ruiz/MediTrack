@@ -7,6 +7,7 @@ export const useMedicationStore = create(
   persist(
     (set, get) => ({
       medications: [],
+      history: [], // Local history for offline-first stats
       loading: false,
       error: null,
       lastSync: null,
@@ -110,19 +111,27 @@ export const useMedicationStore = create(
       },
 
       markAsTaken: async (medicationId, status = 'taken') => {
-        // En una app offline-first, marcar como tomado es instantáneo en UI.
-        // Aquí no cambiamos 'medications' sino que afectamos el historial.
-        
+        const now = new Date().toISOString();
+        const newEntry = {
+            id: Date.now(), // ID temporal local
+            medication_id: medicationId,
+            taken_at: now,
+            status
+        };
+
+        // 1. Actualización Optimista (Local) - Fundamental para el "0 de 0"
+        set(state => ({ history: [newEntry, ...state.history] }));
+
+        // 2. Sincronización con la nube
         try {
             const { error } = await supabase.from('history').insert([{
                 medication_id: medicationId,
-                taken_at: new Date().toISOString(),
+                taken_at: now,
                 status
             }]);
             if (error) throw error;
         } catch (error) {
-            console.warn('Registro de toma guardado solo localmente (Simulado por persistencia de red)');
-            // En una versión más pro, aquí guardaríamos en una tabla de 'sync_queue'
+            console.warn('Registro de toma guardado solo localmente (se sincronizará luego)');
         }
       },
 
@@ -143,24 +152,28 @@ export const useMedicationStore = create(
         const isToday = dateStr === nowStr;
         const isPast = dateStr < nowStr;
 
-        // Traer historial (Aquí sí intentamos red, pero si falla devuelve [])
-        const historyResult = await state.getHistoryByDate(dateStr);
+        // Historial local (Fuente de verdad inmediata)
+        const localHistory = state.history.filter(h => h.taken_at.startsWith(dateStr));
         
         let agenda = [];
         state.medications.forEach(med => {
-            // Lógica de filtrado por fecha...
-            let startStr;
-            try {
-                const startDateObj = med.startDate ? new Date(med.startDate) : new Date();
-                startStr = `${startDateObj.getFullYear()}-${String(startDateObj.getMonth()+1).padStart(2,'0')}-${String(startDateObj.getDate()).padStart(2,'0')}`;
-            } catch(e) { startStr = nowStr; }
+            // Normalizar fecha de inicio
+            let medStartStr = nowStr;
+            if (med.startDate) {
+                try {
+                    medStartStr = med.startDate.split('T')[0];
+                } catch(e) { medStartStr = nowStr; }
+            }
 
-            if (dateStr < startStr) return;
+            if (dateStr < medStartStr) return;
             if (med.endDate && dateStr > med.endDate) return;
             
             const times = med.times || [];
+            // Buscar cuántas veces se ha tomado este medicamento hoy
+            const takenLogs = localHistory.filter(h => h.medication_id === med.id);
+            
             times.forEach((time, index) => {
-                const matchedLog = historyResult.filter(h => h.medication_id === med.id)[index];
+                const matchedLog = takenLogs[index]; 
                 let status = matchedLog ? 'taken' : (isToday && new Date(`${dateStr}T${time}`) < now ? 'missed' : (isPast ? 'missed' : 'pending'));
 
                 agenda.push({
@@ -174,7 +187,7 @@ export const useMedicationStore = create(
         });
 
         agenda.sort((a,b) => a.scheduledTime.localeCompare(b.scheduledTime));
-        return { agenda, history: historyResult };
+        return { agenda, history: localHistory };
       },
 
       getHistoryByDate: async (dateStr) => {
