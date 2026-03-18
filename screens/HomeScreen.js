@@ -12,7 +12,7 @@ import { useSettingsStore } from '../store/useSettingsStore';
 
 const { width } = Dimensions.get('window');
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, onNavigateToHistory }) {
     const { user } = useAuthStore();
     const { getDosesByDate, markAsTaken, medications, fetchMedications, loading, lastSync } = useMedicationStore();
     const darkMode = useSettingsStore(state => state.darkMode);
@@ -445,10 +445,15 @@ export default function HomeScreen({ navigation }) {
             {/* QUICK STATS - Solo si hay datos */}
             {medications.length > 0 && (
                 <>
-                    <TouchableOpacity onPress={() => navigation.navigate('History')} activeOpacity={0.7}>
+                    <TouchableOpacity 
+                        onPress={() => onNavigateToHistory ? onNavigateToHistory() : navigation.navigate('History')} 
+                        activeOpacity={0.7}
+                    >
                         <View className="flex-row justify-between items-center mb-3">
                             <Text className="text-lg font-bold text-slate-800 dark:text-white">Resumen</Text>
-                            <Text className="text-blue-600 dark:text-blue-400 text-sm font-bold">Ver Más</Text>
+                            <View className="bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">
+                                <Text className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-tighter">Ver Historial</Text>
+                            </View>
                         </View>
                     </TouchableOpacity>
             

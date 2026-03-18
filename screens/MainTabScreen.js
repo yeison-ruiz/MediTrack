@@ -24,7 +24,11 @@ export default function MainTabScreen({ navigation }) {
             <View className="flex-1 pb-20 pt-4"> 
                  {/* Home Tab */}
                  <View style={{ display: activeTab === 'Home' ? 'flex' : 'none', flex: 1 }}>
-                     <HomeScreen navigation={navigation} isTab={true} />
+                     <HomeScreen 
+                        navigation={navigation} 
+                        isTab={true} 
+                        onNavigateToHistory={() => setActiveTab('History')} 
+                     />
                  </View>
 
                  {/* Meds Tab */}
