@@ -28,6 +28,7 @@ export default function AppNavigator({ navigationRef }) {
         {!isAuthenticated ? (
           // Auth Stack (No logueado)
           <>
+            <Stack.Screen name="Splash" component={require('../screens/SplashScreen').default} />
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
