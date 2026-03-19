@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-const db = SQLite.openDatabaseSync('medtime.db');
+const db = SQLite.openDatabaseSync('meditrack.db');
 
 export const initDB = () => {
   try {

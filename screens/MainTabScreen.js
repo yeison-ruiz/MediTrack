@@ -28,6 +28,7 @@ export default function MainTabScreen({ navigation }) {
                         navigation={navigation} 
                         isTab={true} 
                         onNavigateToHistory={() => setActiveTab('History')} 
+                        onNavigateToSchedule={() => setActiveTab('Schedule')}
                      />
                  </View>
 

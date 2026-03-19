@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Image, Alert, Linking, Platform } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LogOut, User, ChevronLeft, Shield, Bell } from 'lucide-react-native';
 import { StatusBar } from 'expo-status-bar';
 
@@ -39,20 +40,23 @@ export default function ProfileScreen({ navigation }) {
         {/* User Card - CLICKABLE */}
         <View className="items-center mb-10">
             <TouchableOpacity onPress={handleEditAvatar} className="relative">
-                <View className="h-32 w-32 bg-indigo-50 dark:bg-indigo-900/50 rounded-full items-center justify-center mb-4 border-4 border-white dark:border-slate-800 shadow-md overflow-hidden">
+                <LinearGradient
+                    colors={['#eff6ff', '#dbeafe']}
+                    className="h-32 w-32 rounded-[40px] items-center justify-center mb-4 border-4 border-white dark:border-slate-800 shadow-xl shadow-blue-200/50 dark:shadow-none overflow-hidden"
+                >
                     {user?.avatar && user.avatar.startsWith('http') ? (
                         <Image source={{ uri: user.avatar }} className="w-full h-full" />
                     ) : (
-                        <Text className="text-6xl">{user?.avatar || "👤"}</Text>
+                        <Text style={{ fontSize: 64 }}>{user?.avatar || "👤"}</Text>
                     )}
-                </View>
-                <View className="absolute bottom-4 right-0 bg-blue-500 p-2 rounded-full border-2 border-white dark:border-slate-800">
-                    <Text className="text-white text-xs">✏️</Text>
+                </LinearGradient>
+                <View className="absolute bottom-4 right-0 bg-blue-500 p-2.5 rounded-2xl border-2 border-white dark:border-slate-800 shadow-md">
+                    <Text className="text-white text-[10px]">✏️</Text>
                 </View>
             </TouchableOpacity>
             
             <Text className="text-xl font-bold text-slate-900 dark:text-white">{user?.name || "Usuario"}</Text>
-            <Text className="text-slate-500 dark:text-slate-400 mb-2">{user?.email || "usuario@medtime.app"}</Text>
+            <Text className="text-slate-500 dark:text-slate-400 mb-2">{user?.email || "usuario@meditrack.app"}</Text>
             {user?.is_verified ? (
                 <View className="bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full flex-row items-center border border-green-200 dark:border-green-800">
                     <Shield size={12} color="#16a34a" />

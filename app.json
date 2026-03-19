@@ -1,13 +1,15 @@
 {
   "expo": {
-    "name": "MedTime",
-    "slug": "MedTime",
+    "name": "MediTrack",
+    "slug": "MediTrack",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logomeditrack.png",
+    "icon": "./assets/icon_final.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
+      "image": "./assets/splash_final.png",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -15,10 +17,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logomeditrack.png",
+        "foregroundImage": "./assets/adaptive-icon_final.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.yeisondev2615.MediTrack"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -27,6 +30,11 @@
       "expo-sqlite",
       "@react-native-community/datetimepicker",
       "expo-mail-composer"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8cc01aea-f33d-4424-ad9e-36bff360c809"
+      }
+    }
   }
 }

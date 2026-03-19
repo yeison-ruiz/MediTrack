@@ -126,7 +126,7 @@ export default function AlarmSettingsScreen({ navigation }) {
             <View className="flex-1">
                 <Text className="text-blue-700 font-bold text-base mb-1">Confiabilidad Offline</Text>
                 <Text className="text-blue-600/80 text-sm leading-5">
-                    Las alertas de MedTime se guardan localmente en tu dispositivo. Funcionarán incluso sin internet o en modo avión.
+                    Las alertas de MediTrack se guardan localmente en tu dispositivo. Funcionarán incluso sin internet o en modo avión.
                 </Text>
             </View>
         </View>
@@ -172,7 +172,7 @@ export default function AlarmSettingsScreen({ navigation }) {
         </View>
 
         <View className="items-center mb-10">
-            <Text className="text-xs text-slate-400">MedTime v1.0.0 • Chequeado hoy 10:45 AM</Text>
+            <Text className="text-xs text-slate-400">MediTrack v1.0.0 • Chequeado hoy 10:45 AM</Text>
         </View>
 
       </ScrollView>

@@ -46,7 +46,7 @@ export const useMedicationStore = create(
           }));
 
           // 3. Actualizar SQLite
-          const db = await SQLite.openDatabaseAsync('medtime.db');
+          const db = await SQLite.openDatabaseAsync('meditrack.db');
           await db.runAsync(
             'UPDATE medications SET paused = ? WHERE id = ?',
             [newPausedStatus, medId]
@@ -69,7 +69,7 @@ export const useMedicationStore = create(
       fetchMedications: async () => {
         set({ loading: true, error: null });
         try {
-          const db = await SQLite.openDatabaseAsync('medtime.db');
+          const db = await SQLite.openDatabaseAsync('meditrack.db');
 
           // Intentar obtener de SQLite primero
           let meds = await db.getAllAsync('SELECT * FROM medications');
@@ -308,7 +308,7 @@ export const useMedicationStore = create(
       }
     }),
     {
-      name: 'medication-storage',
+      name: 'meditrack-storage-v1',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

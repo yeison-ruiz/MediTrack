@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SplashScreen from '../screens/SplashScreen';
 import HomeScreen from '../screens/HomeScreen';
 import AddMedicationScreen from '../screens/AddMedicationScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -28,7 +29,7 @@ export default function AppNavigator({ navigationRef }) {
         {!isAuthenticated ? (
           // Auth Stack (No logueado)
           <>
-            <Stack.Screen name="Splash" component={require('../screens/SplashScreen').default} />
+            <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />

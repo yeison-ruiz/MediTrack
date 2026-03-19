@@ -171,7 +171,7 @@ export default function AddMedicationScreen({ navigation, route }) {
                 stock_count: parseInt(stockCount) || 0
             };
             await updateMedication(medToEdit.id, medicationData);
-            showAlert("¡Actualizado!", "El medicamento ha sido modificado exitosamente.", [{ text: "OK", onPress: () => navigation.goBack() }], "success");
+            showAlert("¡Actualizado!", "El medicamento ha sido modificado exitosamente.", [{ text: "Aceptar", onPress: () => navigation.goBack() }], "success");
         } else {
             // Crear string de fecha LOCAL YYYY-MM-DD para evitar saltos de día por Timezone
             const y = startDate.getFullYear();

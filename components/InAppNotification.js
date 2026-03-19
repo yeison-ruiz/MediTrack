@@ -72,7 +72,7 @@ export default function InAppNotification({ onData }) {
                 {/* CONTENT */}
                 <View className="flex-1">
                     <View className="flex-row justify-between">
-                        <Text className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">MEDTIME • AHORA</Text>
+                        <Text className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">MEDITRACK • AHORA</Text>
                     </View>
                     <Text className="text-base font-bold text-slate-800 leading-5">{data.title}</Text>
                     <Text className="text-sm text-slate-500 mt-0.5">{data.body}</Text>

@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import { StatusBar } from 'expo-status-bar';
-import { Briefcase, ArrowRight, ShieldCheck, Mail, Lock, Eye, EyeOff, Fingerprint, Smile, Activity, Heart } from 'lucide-react-native';
+import { Briefcase, ChevronRight, ShieldCheck, Mail, Lock, Eye, EyeOff, Fingerprint, Smile, Activity, Heart } from 'lucide-react-native';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -42,8 +42,8 @@ export default function LoginScreen({ navigation }) {
           <View className="items-center mb-10">
             <View className="bg-white p-5 rounded-[30px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-5">
                 <Image 
-                    source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 90, height: 90 }}
+                    source={require('../assets/logo1.png')} 
+                    style={{ width: 115, height: 115 }}
                     resizeMode="contain"
                 />
             </View>
@@ -91,7 +91,7 @@ export default function LoginScreen({ navigation }) {
 
                       {/* Recover Password Link */}
                       <TouchableOpacity className="self-end px-1">
-                          <Text className="text-brand-blue font-black text-xs">Olvide mi contraseña</Text>
+                          <Text className="text-brand-blue font-black text-xs">Olvidé mi contraseña</Text>
                       </TouchableOpacity>
 
                       {/* Action Button */}
@@ -103,7 +103,7 @@ export default function LoginScreen({ navigation }) {
                           <Text className="text-white font-black text-xl mr-3 font-outfit">
                               {loading ? 'Entrando...' : 'Ingresar'}
                           </Text>
-                          <ArrowRight color="white" size={24} strokeWidth={3} />
+                          <ChevronRight color="white" size={24} strokeWidth={3} />
                       </TouchableOpacity>
 
                       {/* Footer */}

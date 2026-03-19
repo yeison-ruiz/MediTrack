@@ -8,35 +8,45 @@ const { width, height } = Dimensions.get('window');
 
 export default function SplashScreen({ navigation }) {
   const fadeAnim = new Animated.Value(0);
-  const translateY = new Animated.Value(20);
-  const scale = new Animated.Value(0.9);
+  const translateY = new Animated.Value(30);
+  const logoScale = new Animated.Value(0.2);
+  const dot1 = new Animated.Value(0);
+  const dot2 = new Animated.Value(0);
+  const dot3 = new Animated.Value(0);
 
   useEffect(() => {
-    // Animación de entrada suave y profesional - Acelerada
+    // 1. Entrada fluida inicial
     Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 700,
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateY, {
-        toValue: 0,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scale, {
-        toValue: 1,
-        friction: 5,
-        useNativeDriver: true,
-      })
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.spring(translateY, { toValue: 0, friction: 6, tension: 40, useNativeDriver: true }),
+      Animated.spring(logoScale, { toValue: 1, friction: 5, tension: 50, useNativeDriver: true })
     ]).start();
 
-    // Navegar después de 1.5 segundos (Antes 3)
-    const timer = setTimeout(() => {
-      navigation.replace('Welcome');
-    }, 1500);
+    // 2. Loop de puntitos cargando
+    const createDotAnim = (dot, delay) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.timing(dot, { toValue: -10, duration: 300, delay, useNativeDriver: true }),
+          Animated.timing(dot, { toValue: 0, duration: 300, useNativeDriver: true }),
+          Animated.delay(400)
+        ])
+      );
+    };
+    createDotAnim(dot1, 0).start();
+    createDotAnim(dot2, 100).start();
+    createDotAnim(dot3, 200).start();
 
-    return () => clearTimeout(timer);
+    // 3. Salida y navegación
+    const exitTimer = setTimeout(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+            Animated.timing(logoScale, { toValue: 1.1, duration: 300, useNativeDriver: true })
+        ]).start(() => {
+            navigation.replace('Welcome');
+        });
+    }, 2000);
+
+    return () => clearTimeout(exitTimer);
   }, []);
 
   return (
@@ -66,7 +76,7 @@ export default function SplashScreen({ navigation }) {
           opacity: fadeAnim,
           transform: [
             { translateY: translateY },
-            { scale: scale }
+            { scale: logoScale }
           ]
         }}
         className="items-center"
@@ -74,19 +84,16 @@ export default function SplashScreen({ navigation }) {
         <View className="bg-white p-8 rounded-[48px] shadow-2xl shadow-brand-blue/20 border border-slate-50 mb-8 overflow-hidden">
             <View className="absolute inset-0 bg-brand-blue/5 opacity-40" />
             <Image 
-                source={require('../assets/logomeditrack.png')} 
+                source={require('../assets/logo1.png')} 
                 style={{ width: 140, height: 140 }}
                 resizeMode="contain"
             />
         </View>
 
-        <View className="items-center px-4">
-            <Text className="text-5xl font-black text-brand-dark tracking-tighter leading-tight">
-                MedTime
-            </Text>
-            <View className="h-1.5 w-14 bg-brand-blue rounded-full mt-2" />
+        <View className="items-center px-4 mt-6">
+            <View className="h-1.5 w-14 bg-brand-blue rounded-full" />
             <Text className="text-slate-400 font-bold mt-4 tracking-[4px] uppercase text-[10px]">
-                Health Precision Assistant
+                Asistente de Precisión en Salud
             </Text>
         </View>
       </Animated.View>
@@ -94,9 +101,9 @@ export default function SplashScreen({ navigation }) {
       {/* Loading Experience */}
       <View className="absolute bottom-12 w-full items-center">
          <View className="flex-row space-x-2">
-            <View className="w-1.5 h-1.5 rounded-full bg-brand-blue/40" />
-            <View className="w-1.5 h-1.5 rounded-full bg-brand-blue" />
-            <View className="w-1.5 h-1.5 rounded-full bg-brand-blue/40" />
+            <Animated.View style={{ transform: [{ translateY: dot1 }] }} className="w-1.5 h-1.5 rounded-full bg-brand-blue/40" />
+            <Animated.View style={{ transform: [{ translateY: dot2 }] }} className="w-1.5 h-1.5 rounded-full bg-brand-blue" />
+            <Animated.View style={{ transform: [{ translateY: dot3 }] }} className="w-1.5 h-1.5 rounded-full bg-brand-blue/40" />
          </View>
       </View>
     </SafeAreaView>

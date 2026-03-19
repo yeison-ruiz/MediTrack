@@ -3,7 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import { StatusBar } from 'expo-status-bar';
-import { Briefcase, ArrowRight, UserPlus, Mail, Lock, Eye, EyeOff, User, Smile, ShieldCheck, Plus, Heart, Stethoscope, Activity } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Briefcase, ChevronRight, UserPlus, Mail, Lock, Eye, EyeOff, User, Smile, ShieldCheck, Plus, Heart, Stethoscope, Activity } from 'lucide-react-native';
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -74,12 +75,12 @@ export default function RegisterScreen({ navigation }) {
           <View className="items-center mb-10">
             <View className="bg-white p-5 rounded-[30px] shadow-2xl shadow-brand-blue/15 border border-slate-50 mb-5">
                 <Image 
-                    source={require('../assets/logomeditrack.png')} 
-                    style={{ width: 90, height: 90 }}
+                    source={require('../assets/logo1.png')} 
+                    style={{ width: 115, height: 115 }}
                     resizeMode="contain"
                 />
             </View>
-            <Text className="text-4xl font-black text-brand-dark tracking-tighter">Hola!</Text>
+            <Text className="text-4xl font-black text-brand-dark tracking-tighter">¡Hola!</Text>
             <Text className="text-slate-400 text-sm font-medium mt-1">Crea tu cuenta para empezar</Text>
           </View>
 
@@ -93,22 +94,40 @@ export default function RegisterScreen({ navigation }) {
                       {/* Avatar Picker Modern */}
                       <TouchableOpacity 
                           onPress={openAvatarCreator}
-                          className="flex-row items-center bg-slate-50 border border-slate-100 p-3 rounded-2xl shadow-sm"
+                          className="flex-row items-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-4 rounded-3xl shadow-sm"
                       >
-                          <View className="w-12 h-12 rounded-2xl bg-brand-blue/10 items-center justify-center overflow-hidden mr-4">
-                              {avatarUrl && avatarUrl.startsWith('http') ? (
-                                  <Image source={{ uri: avatarUrl }} className="w-full h-full" />
-                              ) : avatarUrl ? (
-                                  <Text className="text-2xl">{avatarUrl}</Text>
-                              ) : (
-                                  <UserPlus size={22} color="#1f95d5" strokeWidth={2.5} />
+                          <View className="relative">
+                              <LinearGradient
+                                  colors={['#eff6ff', '#dbeafe']}
+                                  className="w-16 h-16 rounded-2xl items-center justify-center overflow-hidden mr-4 border border-white dark:border-slate-700 shadow-inner"
+                              >
+                                  {avatarUrl && avatarUrl.startsWith('http') ? (
+                                      <Image source={{ uri: avatarUrl }} className="w-full h-full" />
+                                  ) : avatarUrl ? (
+                                      <Text style={{ fontSize: 32 }}>{avatarUrl}</Text>
+                                  ) : (
+                                      <View className="bg-blue-500/10 p-2 rounded-full">
+                                          <UserPlus size={24} color="#3b82f6" strokeWidth={2.5} />
+                                      </View>
+                                  )}
+                              </LinearGradient>
+                              {!avatarUrl && (
+                                  <View className="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white" />
                               )}
                           </View>
+                          
                           <View className="flex-1">
-                             <Text className="text-brand-dark font-black text-sm">{avatarUrl ? 'Avatar Listo' : 'Elige tu Avatar'}</Text>
-                             <Text className="text-slate-400 text-[10px]">Personaliza tu perfil</Text>
+                             <Text className="text-slate-900 dark:text-white font-black text-base leading-tight">
+                                 {avatarUrl ? '¡Te ves genial!' : 'Elige tu Avatar'}
+                             </Text>
+                             <Text className="text-slate-400 text-xs mt-0.5">
+                                 {avatarUrl ? 'Toca para cambiar' : 'Dale un toque personal'}
+                             </Text>
                           </View>
-                          <Plus size={16} color="#1f95d5" strokeWidth={3} className="mr-2" />
+                          
+                          <View className="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl">
+                             <Plus size={16} color="#3b82f6" strokeWidth={3} />
+                          </View>
                       </TouchableOpacity>
 
                       <View className="space-y-4">
@@ -160,7 +179,7 @@ export default function RegisterScreen({ navigation }) {
                           <Text className="text-white font-black text-xl mr-3">
                               Registrarme
                           </Text>
-                          <ArrowRight color="white" size={24} strokeWidth={3} />
+                          <ChevronRight color="white" size={24} strokeWidth={3} />
                       </TouchableOpacity>
 
                       {/* Footer */}

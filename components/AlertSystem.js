@@ -18,7 +18,7 @@ export const AlertProvider = ({ children }) => {
   const showAlert = (title, message, buttons = [], type = 'info') => {
     // Si no hay botones, poner uno por defecto "OK"
     const finalButtons = buttons.length > 0 ? buttons : [
-        { text: 'OK', onPress: () => {}, style: 'primary' }
+        { text: 'Entendido', onPress: () => {}, style: 'primary' }
     ];
     
     // Auto-detect type based on title keywords if not provided

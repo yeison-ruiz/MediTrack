@@ -3,7 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, FlatList, Dimensions, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity, Cloud, CloudOff, Wifi, Plus, Heart } from 'lucide-react-native';
+import { Bell, Check, Pill, TrendingUp, CheckCircle, AlertTriangle, Activity, Cloud, CloudOff, Wifi, Plus, Heart, Calendar, ChevronRight } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import * as Speech from 'expo-speech';
 import { useAuthStore } from '../store/useAuthStore';
@@ -12,7 +13,7 @@ import { useSettingsStore } from '../store/useSettingsStore';
 
 const { width } = Dimensions.get('window');
 
-export default function HomeScreen({ navigation, onNavigateToHistory }) {
+export default function HomeScreen({ navigation, onNavigateToHistory, onNavigateToSchedule }) {
     const { user } = useAuthStore();
     const { getDosesByDate, markAsTaken, medications, fetchMedications, loading, lastSync } = useMedicationStore();
     const darkMode = useSettingsStore(state => state.darkMode);
@@ -503,25 +504,42 @@ export default function HomeScreen({ navigation, onNavigateToHistory }) {
                 </>
             )}
     
-            {/* TODAY'S DOSES TITLE */}
-            <Text className="text-lg font-bold text-slate-800 dark:text-white mb-3">Agenda de Hoy</Text>
-    
-            {/* LISTA */}
-            <FlatList
-                data={timeline}
-                keyExtractor={item => item.uniqueId}
-                renderItem={renderDoseItem}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
-                ListEmptyComponent={
-                    medications.length > 0 ? (
-                        <View className="py-10 items-center">
-                            <Text className="text-slate-400 text-center">No hay dosis programadas para hoy.</Text>
-                            <Text className="text-slate-300 text-xs text-center mt-1">Revisa la fecha de inicio de tus medicamentos.</Text>
-                        </View>
-                    ) : null
-                }
-            />
+            {/* AGENDA LINK SECTION */}
+            <TouchableOpacity 
+                onPress={() => onNavigateToSchedule ? onNavigateToSchedule() : navigation.navigate('Schedule')}
+                activeOpacity={0.8}
+                className="mt-2 mb-8"
+            >
+                <View className="flex-row justify-between items-center mb-3 px-1">
+                    <Text className="text-lg font-bold text-slate-800 dark:text-white">Agenda de Hoy</Text>
+                    <View className="flex-row items-center">
+                        <Text className="text-brand-blue dark:text-brand-green font-bold text-xs uppercase mr-1">Ver Todo</Text>
+                        <ChevronRight size={14} color="#1f95d5" />
+                    </View>
+                </View>
+
+                <LinearGradient
+                    colors={darkMode ? ['#1e293b', '#0f172a'] : ['#ffffff', '#f8fafc']}
+                    className="p-5 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm flex-row items-center"
+                >
+                    <View className="bg-brand-blue/10 dark:bg-brand-blue/20 p-3 rounded-2xl mr-4">
+                        <Calendar size={24} color="#1f95d5" />
+                    </View>
+                    <View className="flex-1">
+                        <Text className="text-slate-900 dark:text-white font-bold text-base">
+                            {timeline.length > 0 
+                                ? `${timeline.length} dosis programadas` 
+                                : 'Sin dosis para hoy'}
+                        </Text>
+                        <Text className="text-slate-400 text-xs mt-0.5">
+                            {timeline.filter(i => i.isTaken).length} completadas • {timeline.filter(i => !i.isTaken).length} pendientes
+                        </Text>
+                    </View>
+                    <View className="bg-slate-50 dark:bg-slate-700/50 p-2 rounded-full">
+                        <ChevronRight size={18} color={darkMode ? "#94a3b8" : "#cbd5e1"} />
+                    </View>
+                </LinearGradient>
+            </TouchableOpacity>
 
             {/* DOCTOR CONFIRMATION MODAL */}
             <Modal

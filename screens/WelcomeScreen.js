@@ -1,13 +1,27 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Briefcase, ArrowRight, Heart, Activity, Stethoscope, Plus } from 'lucide-react-native';
+import { Briefcase, ChevronRight, Heart, Activity, Stethoscope, Plus, Info, ShieldCheck, Zap } from 'lucide-react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useAlert } from '../components/AlertSystem';
 
 export default function WelcomeScreen({ navigation }) {
-  return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
-      <StatusBar style="dark" />
+    const { showAlert } = useAlert();
+
+    const handleHelp = () => {
+        showAlert(
+            "Acerca de MediTrack",
+            "Somos tu asistente inteligente para medicamentos.\n\n🔒 Privacidad: Tus datos están seguros.\n🔔 Precisión: Nunca olvides una dosis.\n✨ Simplicidad: Diseñado para ser fácil de usar.",
+            [
+                { text: "Entendido" }
+            ],
+            "info"
+        );
+    };
+
+    return (
+        <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
+            <StatusBar style="dark" />
       
       {/* Ultra-Modern Background Elements */}
       <View className="absolute top-[-40] left-[-40] w-[280] h-[280] bg-brand-blue/15 rounded-full" />
@@ -36,27 +50,27 @@ export default function WelcomeScreen({ navigation }) {
             <View className="bg-brand-blue/10 p-2.5 rounded-2xl border border-brand-blue/15 shadow-sm">
                 <Heart size={24} color="#1f95d5" fill="#1f95d5" />
             </View>
-            <TouchableOpacity className="bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+            <TouchableOpacity 
+                onPress={handleHelp}
+                className="bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 shadow-sm active:bg-slate-100"
+            >
                 <Text className="text-brand-blue font-black text-sm">Ayuda</Text>
             </TouchableOpacity>
         </View>
 
         {/* Center Hero Section */}
         <View className="items-center">
-            {/* Logo Adjusted Size (Was w-80 h-80, now w-40 h-40) */}
-            <View className="bg-white p-7 rounded-[45px] shadow-2xl shadow-brand-blue/20 mb-10 w-48 h-48 justify-center items-center border border-slate-50">
+            {/* Logo Moderately Increased Size */}
+            <View className="bg-white p-5 rounded-[45px] shadow-2xl shadow-brand-blue/20 mb-10 w-56 h-56 justify-center items-center border border-slate-50">
                 <Image 
-                    source={require('../assets/logomeditrack.png')} 
+                    source={require('../assets/logo1.png')} 
                     style={{ width: '100%', height: '100%' }}
                     resizeMode="contain"
                 />
             </View>
 
-            <View className="items-center px-4">
-                <Text className="text-5xl font-black text-brand-dark text-center tracking-tighter leading-tight">
-                    MedTime
-                </Text>
-                <Text className="text-lg text-slate-500 text-center font-bold mt-2 px-4 leading-normal">
+            <View className="items-center px-4 mt-4">
+                <Text className="text-lg text-slate-500 text-center font-bold px-4 leading-normal">
                     Tu compañero inteligente para el control preciso de tu salud.
                 </Text>
             </View>
@@ -70,7 +84,7 @@ export default function WelcomeScreen({ navigation }) {
                     onPress={() => navigation.navigate('Register')}
                 >
                     <Text className="text-white font-black text-xl mr-3 font-outfit">Empezar Ahora</Text>
-                    <ArrowRight color="white" size={24} strokeWidth={3} />
+                    <ChevronRight color="white" size={24} strokeWidth={3} />
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -89,8 +103,8 @@ export default function WelcomeScreen({ navigation }) {
                     <View className="w-2 h-2 rounded-full bg-slate-200" />
                     <View className="w-2 h-2 rounded-full bg-slate-200" />
                 </View>
-                <Text className="text-[11px] text-slate-400 font-black tracking-widest uppercase opacity-70">
-                    Trusted by health professionals
+                <Text className="text-[11px] text-slate-400 font-black tracking-widest uppercase opacity-70 text-center">
+                    Avalado por profesionales de la salud
                 </Text>
             </View>
         </View>
