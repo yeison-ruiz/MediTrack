@@ -12,11 +12,11 @@ export default function SplashScreen({ navigation }) {
   const scale = new Animated.Value(0.9);
 
   useEffect(() => {
-    // Animación de entrada suave y profesional
+    // Animación de entrada suave y profesional - Acelerada
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 700,
         useNativeDriver: true,
       }),
       Animated.spring(translateY, {
@@ -31,10 +31,10 @@ export default function SplashScreen({ navigation }) {
       })
     ]).start();
 
-    // Navegar después de 3 segundos
+    // Navegar después de 1.5 segundos (Antes 3)
     const timer = setTimeout(() => {
       navigation.replace('Welcome');
-    }, 3000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
