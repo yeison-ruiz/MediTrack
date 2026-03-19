@@ -8,8 +8,8 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logomeditrack.png",
-      "resizeMode": "center",
+      "image": "./assets/logo-designed-splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logomeditrack.png",
+        "foregroundImage": "./assets/logo-designed-splash.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
