@@ -7,10 +7,6 @@
     "icon": "./assets/logomeditrack.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true
     },
