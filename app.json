@@ -8,8 +8,8 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/icon.png",
-      "resizeMode": "contain",
+      "image": "./assets/logomeditrack.png",
+      "resizeMode": "center",
       "backgroundColor": "#ffffff"
     },
     "ios": {
