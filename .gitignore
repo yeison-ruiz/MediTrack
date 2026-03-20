@@ -42,3 +42,12 @@ config.js
 # generated native folders
 /ios
 /android
+
+# Temporary Diagnostic and Build Files
+/dist_local_test/
+/dist_test/
+check_report*.txt
+doctor_*.txt
+export_log.txt
+export_report.txt
+DEV_PROGRESS_*.md
